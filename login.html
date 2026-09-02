@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل دخول الإدارة | متجر رونق اليمن</title>
+    <meta name="description" content="بوابة تسجيل الدخول الآمنة للوحة تحكم إدارة متجر رونق اليمن.">
+    
+    <!-- الأيقونات والخطوط -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ملفات التصميم -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.12) 0%, transparent 40%),
+                        var(--bg-main);
+        }
+
+        .login-glow-bg {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(236, 72, 153, 0.25));
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+            animation: pulseGlow 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.9) translate(-20px, -20px); opacity: 0.6; }
+            100% { transform: scale(1.1) translate(20px, 20px); opacity: 0.9; }
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), var(--glow-primary);
+            position: relative;
+            z-index: 1;
+            animation: cardAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            text-decoration: none;
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .login-subtitle {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        .input-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon-wrapper i.lead-icon {
+            position: absolute;
+            right: 1rem;
+            color: var(--text-muted);
+            font-size: 1rem;
+            pointer-events: none;
+            transition: color 0.3s ease;
+        }
+
+        .input-icon-wrapper .form-input {
+            padding-right: 2.75rem;
+            padding-left: 2.75rem;
+        }
+
+        .input-icon-wrapper .form-input:focus + i.lead-icon {
+            color: var(--brand-primary);
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            left: 0.85rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-password-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .credentials-hint-card {
+            background: var(--brand-primary-light);
+            border: 1px dashed rgba(99, 102, 241, 0.3);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .credentials-hint-card strong {
+            color: var(--brand-primary);
+        }
+
+        .login-footer-actions {
+            margin-top: 1.75rem;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.25rem;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--brand-primary);
+            transform: translateX(4px);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="login-page">
+
+    <div class="login-glow-bg"></div>
+
+    <div class="login-card">
+        
+        <!-- الهيدر والشعار -->
+        <div class="login-header">
+            <a href="index.html" class="login-logo">
+                <div class="logo-icon" style="width: 44px; height: 44px; font-size: 1.35rem;">
+                    <i class="fa-solid fa-gem"></i>
+                </div>
+                <div class="logo-text" style="text-align: right;">
+                    <span class="logo-title" style="font-size: 1.45rem;">رَوْنَـقْ <span>✦</span></span>
+                    <span class="logo-subtitle" style="font-size: 0.72rem;">RAWNAQ YEMEN</span>
+                </div>
+            </a>
+            <h1 class="login-title">تسجيل دخول الإدارة</h1>
+            <p class="login-subtitle">يرجى إدخال بيانات الاعتماد للوصول إلى لوحة التحكم</p>
+        </div>
+
+        <!-- بطاقة بيانات الدخول الافتراضية -->
+        <div class="credentials-hint-card">
+            <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--brand-primary);">
+                <i class="fa-solid fa-shield-halved"></i> بيانات الدخول الافتراضية للإدارة:
+            </div>
+            <div>اسم المستخدم: <strong>admin</strong></div>
+            <div>كلمة المرور: <strong>admin123</strong></div>
+        </div>
+
+        <!-- نموذج تسجيل الدخول -->
+        <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+            
+            <div class="form-group">
+                <label class="form-label" for="adminUsername">اسم المستخدم أو البريد الإلكتروني</label>
+                <div class="input-icon-wrapper">
+                    <input type="text" id="adminUsername" class="form-input" placeholder="admin" autocomplete="username" required autofocus>
+                    <i class="fa-solid fa-user lead-icon"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label class="form-label" for="adminPassword" style="margin-bottom: 0;">كلمة المرور</label>
+                </div>
+                <div class="input-icon-wrapper">
+                    <input type="password" id="adminPassword" class="form-input" placeholder="••••••••" autocomplete="current-password" required>
+                    <i class="fa-solid fa-lock lead-icon"></i>
+                    <button type="button" class="toggle-password-btn" id="togglePasswordBtn" onclick="togglePasswordVisibility()" title="إظهار / إخفاء">
+                        <i class="fa-solid fa-eye" id="passwordEyeIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem; margin-bottom: 1.25rem;">
+                <label class="filter-checkbox-label" style="font-size: 0.85rem; cursor: pointer;">
+                    <input type="checkbox" id="rememberMe" checked style="accent-color: var(--brand-primary);">
+                    <span>تذكرني على هذا الجهاز</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn-primary login-btn" id="loginSubmitBtn">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>تسجيل الدخول إلى لوحة التحكم</span>
+            </button>
+        </form>
+
+        <div class="login-footer-actions">
+            <a href="index.html" class="back-link">
+                <i class="fa-solid fa-arrow-right"></i>
+                <span>العودة لمتجر رونق اليمن</span>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- حاوية الإشعارات المنبثقة -->
+    <div class="toast-container"></div>
+
+    <!-- منطق التحقق وتسجيل الدخول -->
+    <script>
+        // إعداد بيانات المدير الافتراضية إذا لم تكن موجودة
+        const AUTH_CONFIG = {
+            USER_KEY: 'rawnaq_admin_username',
+            PASS_KEY: 'rawnaq_admin_password',
+            SESSION_KEY: 'rawnaq_admin_authenticated'
+        };
+
+        // تعيين البيانات الافتراضية في أول مرة
+        if (!localStorage.getItem(AUTH_CONFIG.USER_KEY)) {
+            localStorage.setItem(AUTH_CONFIG.USER_KEY, 'admin');
+        }
+        if (!localStorage.getItem(AUTH_CONFIG.PASS_KEY)) {
+            localStorage.setItem(AUTH_CONFIG.PASS_KEY, 'admin123');
+        }
+
+        // إذا كان مسجلاً الدخول بالفعل، نقله للوحة التحكم
+        if (sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true' || localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
+            window.location.href = 'admin.html';
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('adminPassword');
+            const eyeIcon = document.getElementById('passwordEyeIcon');
+            if (!passInput || !eyeIcon) return;
+
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                passInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            
+            const usernameInput = document.getElementById('adminUsername').value.trim();
+            const passwordInput = document.getElementById('adminPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            const validUser = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
+            const validPass = localStorage.getItem(AUTH_CONFIG.PASS_KEY) || 'admin123';
+
+            // حالة التحميل في الزر
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق...';
+
+            setTimeout(() => {
+                if (usernameInput === validUser && passwordInput === validPass) {
+                    // نجاح الدخول
+                    sessionStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
+                    if (rememberMe) {
+                        localStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
+                    } else {
+                        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+                    }
+
+                    showToast('تم تسجيل الدخول بنجاح! جاري تحويلك للوحة التحكم...', 'success', 'fa-circle-check');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin.html';
+                    }, 800);
+                } else {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول إلى لوحة التحكم';
+                    showToast('بيانات الدخول غير صحيحة! يرجى التأكد من اسم المستخدم وكلمة المرور.', 'error', 'fa-circle-xmark');
+                }
+            }, 600);
+        }
+
+        function showToast(message, type = 'info', icon = 'fa-info-circle') {
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-20px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
