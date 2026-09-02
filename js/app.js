@@ -21,14 +21,12 @@ const AppState = {
     selectedQuickViewColor: null
 };
 
-const STORE_WHATSAPP_NUMBER = "967777123456"; // رقم خدمة عملاء واتساب متجر رونق
-const FREE_SHIPPING_THRESHOLD = 100000; // شحن مجاني للطلبات أكثر من 100,000 ر.ي
-
 // ==========================================
 // التهيئة عند تحميل الصفحة (Initialization)
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initStoreContactInfo();
     renderCategories();
     renderProducts();
     updateCartUI();
@@ -36,6 +34,53 @@ document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
     initFlashSaleCountdown();
 });
+
+function initStoreContactInfo() {
+    const settings = getStoreSettings();
+    const waNumber = settings.whatsappNumber ? settings.whatsappNumber.replace(/[\s+-]/g, '') : '967777123456';
+
+    // تحديث الزر العائم
+    const floatingBtn = document.querySelector('.floating-whatsapp-btn');
+    if (floatingBtn) {
+        floatingBtn.href = `https://wa.me/${waNumber}?text=مرحباً%20متجر%20رونق%20اليمن%20أود%20الاستفسار%20عن%20الطلب`;
+    }
+
+    // تحديث زر البانر
+    const heroWaBtn = document.querySelector('.hero-actions .btn-whatsapp-direct');
+    if (heroWaBtn) {
+        heroWaBtn.href = `https://wa.me/${waNumber}?text=مرحباً%20متجر%20رونق%20اليمن%20أود%20الاستفسار%20عن%20المنتجات%20المتوفرة`;
+    }
+
+    // تحديث رابط الواتساب في الفوتر
+    const footerWa = document.querySelector('.social-links a[title="واتساب"]');
+    if (footerWa) {
+        footerWa.href = `https://wa.me/${waNumber}`;
+    }
+
+    // تحديث أرقام الهاتف في الفوتر
+    const footerPhone = document.querySelector('.footer-links a[href^="tel:+9677"]');
+    if (footerPhone && settings.supportPhone) {
+        footerPhone.href = `tel:${settings.supportPhone.replace(/[\s-]/g, '')}`;
+        footerPhone.innerHTML = `<i class="fa-solid fa-phone" style="font-size: 0.8rem; margin-left: 0.4rem;"></i> ${settings.supportPhone}`;
+    }
+
+    // تحديث بيانات الشبكة الموحدة
+    const unsBox = document.getElementById('unsInstructionsBox');
+    if (unsBox) {
+        unsBox.innerHTML = `
+            <h5><i class="fa-solid fa-circle-info"></i> بيانات التحويل الرسمية عبر الشبكة الموحدة (UNS):</h5>
+            <div style="margin-top: 0.3rem;">
+                <div>اسم المستلم: <strong>${settings.unsBeneficiaryName || 'متجر رونق اليمن المعتمد'}</strong></div>
+                <div>رقم الهاتف المعتمد: <strong>${settings.unsPhone || '777123456'}</strong></div>
+                <div>رقم حساب المحفظة / التاجر: <strong>${settings.unsAccount || '55443322'}</strong></div>
+            </div>
+            <div style="margin-top: 0.75rem;">
+                <label class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;" for="unsVoucherNumber">رقم سند / إشعار الحوالة (اختياري لسرعة المطابقة):</label>
+                <input type="text" id="unsVoucherNumber" class="form-input" style="padding: 0.45rem 0.75rem; font-size: 0.85rem;" placeholder="أدخل رقم السند أو الحوالة إن وُجد">
+            </div>
+        `;
+    }
+}
 
 // ==========================================
 // نظام الوضع الليلي / النهاري (Theme System)
@@ -441,8 +486,11 @@ function orderProductViaWhatsApp(productId) {
     const product = allProducts.find(p => p.id === productId);
     if (!product) return;
 
+    const settings = getStoreSettings();
+    const waNumber = settings.whatsappNumber ? settings.whatsappNumber.replace(/[\s+-]/g, '') : '967777123456';
+
     const message = `مرحباً متجر رونق اليمن 💎%0Aأرغب في طلب المنتج التالي:%0A🛍️ *${product.name}*%0A💰 السعر: *${product.price.toLocaleString()} ر.ي*%0A🔗 الرابط: ${window.location.origin + window.location.pathname}%0A%0Aيرجى إفادتي بتفاصيل الشحن والتوصيل.`;
-    const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
+    const waUrl = `https://wa.me/${waNumber}?text=${message}`;
     window.open(waUrl, '_blank');
 }
 
@@ -468,8 +516,11 @@ function sendCartViaWhatsApp() {
     let discount = AppState.appliedCoupon ? (subtotal * AppState.appliedCoupon.discount) : 0;
     let finalTotal = subtotal - discount;
 
+    const settings = getStoreSettings();
+    const waNumber = settings.whatsappNumber ? settings.whatsappNumber.replace(/[\s+-]/g, '') : '967777123456';
+
     const message = `مرحباً متجر رونق اليمن 💎%0Aأرغب في إتمام طلب محتويات السلة:%0A%0A${itemsText}%0A💵 *المجموع الإجمالي: ${finalTotal.toLocaleString()} ر.ي*%0A%0Aيرجى تأكيد استلام الطلب وتزويدي بحساب حوالة الشبكة الموحدة أو التوصيل.`;
-    const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
+    const waUrl = `https://wa.me/${waNumber}?text=${message}`;
     window.open(waUrl, '_blank');
 }
 
