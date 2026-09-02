@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم الإدارة | متجر رونق اليمن</title>
+    
+    <!-- الأيقونات والخطوط -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ملفات التصميم -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <div class="admin-layout">
+        
+        <!-- ==========================================
+             القائمة الجانبية (Sidebar)
+             ========================================== -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon" style="width: 40px; height: 40px; font-size: 1.2rem;">
+                    <i class="fa-solid fa-gem"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title" style="font-size: 1.35rem;">رَوْنَـقْ <span>✦</span></span>
+                    <span class="logo-subtitle">لوحة إدارة رونق اليمن</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li>
+                    <div class="sidebar-link active" onclick="switchTab('tab-dashboard', this)">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>الرئيسية والمؤشرات</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="sidebar-link" onclick="switchTab('tab-products', this)">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>إدارة المنتجات</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="sidebar-link" onclick="switchTab('tab-orders', this)">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>طلبات المحافظات</span>
+                        <span class="sidebar-badge" id="sidebarOrdersBadge">0</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="sidebar-link" onclick="switchTab('tab-coupons', this)">
+                        <i class="fa-solid fa-tags"></i>
+                        <span>الكوبونات والخصومات</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <button class="back-to-store-btn" onclick="handleResetDefaults()" style="margin-bottom: 0.5rem; background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.2); color: #f43f5e;" title="استعادة المنتجات الافتراضية الأصلية">
+                    <i class="fa-solid fa-rotate-left"></i> استعادة الافتراضي
+                </button>
+                <a href="index.html" class="back-to-store-btn">
+                    <i class="fa-solid fa-store"></i> الانتقال للمتجر
+                </a>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             المحتوى الرئيسي للوحة الإدارة (Main Content)
+             ========================================== -->
+        <main class="admin-main">
+            
+            <!-- الهيدر العلوي -->
+            <header class="admin-topbar">
+                <div class="admin-title-wrap">
+                    <h1 id="adminPageTitle">لوحة تحكم رونق اليمن</h1>
+                    <p id="adminPageDesc">نظرة عامة على أداء المتجر والمبيعات بالريال اليمني</p>
+                </div>
+
+                <div class="admin-topbar-actions">
+                    <button class="btn-primary" onclick="openAddProductModal()" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
+                        <i class="fa-solid fa-plus"></i> إضافة منتج جديد
+                    </button>
+
+                    <button class="action-btn" id="adminThemeBtn" title="تبديل المظهر">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+
+                    <div class="admin-user-badge">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="المدير" class="admin-avatar">
+                        <span class="admin-name">مدير متجر رونق اليمن</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- محتوى الأقسام التفاعلية -->
+            <div class="admin-body">
+                
+                <!-- ==========================================
+                     القسم 1: لوحة المؤشرات (Dashboard Tab)
+                     ========================================== -->
+                <div id="tab-dashboard" class="tab-content active">
+                    
+                    <!-- بطاقات المؤشرات الإحصائية -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon gold">
+                                <i class="fa-solid fa-box"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>إجمالي المنتجات</h3>
+                                <div class="stat-number" id="statTotalProducts">0</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon green">
+                                <i class="fa-solid fa-sack-dollar"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>قيمة المبيعات / الطلبات</h3>
+                                <div class="stat-number" id="statTotalRevenue">0 ر.ي</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon blue">
+                                <i class="fa-solid fa-cart-shopping"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>إجمالي الطلبات المسجلة</h3>
+                                <div class="stat-number" id="statTotalOrders">0</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon purple">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h3>تنبيهات المخزون المنخفض</h3>
+                                <div class="stat-number" id="statLowStock">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- نظرة سريعة على أحدث المنتجات -->
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            <h3><i class="fa-solid fa-fire" style="color: var(--brand-primary);"></i> المنتجات المعروضة في متجر رونق اليمن</h3>
+                            <button class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary); font-size: 0.85rem; padding: 0.4rem 0.85rem;" onclick="switchTab('tab-products', document.querySelectorAll('.sidebar-link')[1])">
+                                عرض كافة المنتجات <i class="fa-solid fa-arrow-left" style="margin-right: 0.3rem;"></i>
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>المنتج</th>
+                                        <th>القسم</th>
+                                        <th>السعر (ر.ي)</th>
+                                        <th>حالة المخزون</th>
+                                        <th>التقييم</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminProductsTableBody">
+                                    <!-- يتم حقن المنتجات تلقائياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     القسم 2: إدارة المنتجات الكاملة (Products Tab)
+                     ========================================== -->
+                <div id="tab-products" class="tab-content">
+                    
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            
+                            <div class="table-filters-group">
+                                <div class="table-search-box">
+                                    <i class="fa-solid fa-magnifying-glass" style="color: var(--text-muted);"></i>
+                                    <input type="text" id="productSearchInput" placeholder="بحث بالاسم أو الوصف في رونق...">
+                                </div>
+
+                                <select id="productCategoryFilter" class="sort-select">
+                                    <option value="all">جميع الأقسام</option>
+                                    <option value="electronics">إلكترونيات وذكاء اصطناعي</option>
+                                    <option value="perfumes">عطور وبخور فاخر</option>
+                                    <option value="watches">ساعات ومجوهرات</option>
+                                    <option value="fashion">أزياء واكسسوارات</option>
+                                    <option value="home">ديكور ومنزل</option>
+                                </select>
+                            </div>
+
+                            <button class="btn-primary" onclick="openAddProductModal()">
+                                <i class="fa-solid fa-plus"></i> إضافة منتج جديد
+                            </button>
+
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>المنتج</th>
+                                        <th>القسم</th>
+                                        <th>السعر (ر.ي)</th>
+                                        <th>حالة التوفر</th>
+                                        <th>التقييم</th>
+                                        <th>الإجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- تشارك نفس الجدول التفاعلي -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     القسم 3: إدارة الطلبات (Orders Tab)
+                     ========================================== -->
+                <div id="tab-orders" class="tab-content">
+                    
+                    <div class="table-card">
+                        <div class="table-toolbar">
+                            <h3><i class="fa-solid fa-receipt" style="color: var(--brand-primary);"></i> سجل طلبات المحافظات اليمنية</h3>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>رقم الطلب</th>
+                                        <th>العميل</th>
+                                        <th>المحافظة</th>
+                                        <th>عدد المنتجات</th>
+                                        <th>الإجمالي (ر.ي)</th>
+                                        <th>حالة الطلب</th>
+                                        <th>التفاصيل</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminOrdersTableBody">
+                                    <!-- يتم حقن الطلبات ديناميكياً -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     القسم 4: إدارة الكوبونات (Coupons Tab)
+                     ========================================== -->
+                <div id="tab-coupons" class="tab-content">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        
+                        <!-- إضافة كوبون جديد -->
+                        <div class="table-card" style="padding: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fa-solid fa-plus-circle" style="color: var(--brand-primary);"></i> إنشاء كود خصم جديد لرونق اليمن
+                            </h3>
+                            
+                            <form id="addCouponForm">
+                                <div class="form-group">
+                                    <label class="form-label">رمز الكوبون (مثال: RAWNAQ30) *</label>
+                                    <input type="text" id="newCouponCode" class="form-input" style="text-transform: uppercase;" placeholder="RAWNAQ30" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">نسبة الخصم % *</label>
+                                    <input type="number" id="newCouponDiscount" class="form-input" min="1" max="90" placeholder="30" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">وصف الكوبون</label>
+                                    <input type="text" id="newCouponDesc" class="form-input" placeholder="خصم 30% عروض اليمن">
+                                </div>
+
+                                <button type="submit" class="btn-primary" style="width: 100%;">
+                                    <i class="fa-solid fa-check"></i> حفظ وتفعيل الكوبون
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- قائمة الكوبونات الحالية -->
+                        <div class="table-card" style="padding: 1.5rem;">
+                            <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fa-solid fa-tags" style="color: var(--brand-primary);"></i> الكوبونات المفعلة
+                            </h3>
+                            
+                            <div id="adminCouponsList">
+                                <!-- يتم حقن الكوبونات -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <!-- ==========================================
+         نافذة إضافة / تعديل المنتج (Add / Edit Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="productModalOverlay" onclick="if(event.target === this) closeProductModal()">
+        <div class="admin-modal">
+            <button class="modal-close-btn" onclick="closeProductModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="admin-modal-header">
+                <h2 id="productModalTitle" style="font-size: 1.4rem;">إضافة منتج جديد لمتجر رونق اليمن</h2>
+            </div>
+
+            <form id="productForm">
+                <div class="admin-form-grid">
+                    
+                    <!-- الاسم -->
+                    <div class="form-group form-full-col">
+                        <label class="form-label" for="prodName">اسم المنتج *</label>
+                        <input type="text" id="prodName" class="form-input" placeholder="مثال: سماعات بلوتوث فاخرة عازلة للضوضاء" required>
+                    </div>
+
+                    <!-- القسم -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodCategory">القسم / التصنيف *</label>
+                        <select id="prodCategory" class="form-input" required>
+                            <option value="electronics">إلكترونيات وذكاء اصطناعي</option>
+                            <option value="perfumes">عطور وبخور فاخر</option>
+                            <option value="watches">ساعات ومجوهرات</option>
+                            <option value="fashion">أزياء واكسسوارات</option>
+                            <option value="home">ديكور ومقتنيات منزلية</option>
+                        </select>
+                    </div>
+
+                    <!-- السعر الحالي بالريال اليمني -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodPrice">السعر الحالي (ريال يمني - ر.ي) *</label>
+                        <input type="number" id="prodPrice" class="form-input" min="1000" step="any" placeholder="85000" required>
+                    </div>
+
+                    <!-- السعر قبل الخصم -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodOriginalPrice">السعر قبل الخصم (ر.ي)</label>
+                        <input type="number" id="prodOriginalPrice" class="form-input" min="1000" step="any" placeholder="110000">
+                    </div>
+
+                    <!-- نسبة الخصم -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodDiscount">نسبة الخصم (%)</label>
+                        <input type="number" id="prodDiscount" class="form-input" min="0" max="100" placeholder="25">
+                    </div>
+
+                    <!-- الشارة الظاهرة -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodBadge">نص الشارة (Badge)</label>
+                        <input type="text" id="prodBadge" class="form-input" placeholder="الأكثر طلباً، خصم 25%، جديد">
+                    </div>
+
+                    <!-- نوع الشارة ولونها -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodBadgeType">نوع ولون الشارة</label>
+                        <select id="prodBadgeType" class="form-input">
+                            <option value="hot">أحمر (الأكثر طلباً / ساخن)</option>
+                            <option value="sale">ذهبي (خصم مميز)</option>
+                            <option value="new">زمردي (جديد)</option>
+                            <option value="exclusive">بنفسجي (حصري وملكي)</option>
+                        </select>
+                    </div>
+
+                    <!-- كمية المخزون -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodStockCount">الكمية المتوفرة بالمخزون *</label>
+                        <input type="number" id="prodStockCount" class="form-input" min="0" placeholder="20" required>
+                    </div>
+
+                    <!-- التقييم -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodRating">التقييم (من 5)</label>
+                        <input type="number" id="prodRating" class="form-input" min="1" max="5" step="0.1" placeholder="4.9">
+                    </div>
+
+                    <!-- عدد المراجعات -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodReviewsCount">عدد التقييمات</label>
+                        <input type="number" id="prodReviewsCount" class="form-input" min="0" placeholder="45">
+                    </div>
+
+                    <!-- حالة التوفر -->
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem;">
+                        <input type="checkbox" id="prodInStock" style="width: 20px; height: 20px; accent-color: var(--brand-primary);" checked>
+                        <label for="prodInStock" style="font-weight: 700; cursor: pointer;">المنتج متوفر وجاهز للطلب الفوري في اليمن</label>
+                    </div>
+
+                    <!-- رابط الصورة -->
+                    <div class="form-group form-full-col">
+                        <label class="form-label" for="prodImageUrl">رابط صورة المنتج (URL) *</label>
+                        <input type="url" id="prodImageUrl" class="form-input" placeholder="https://images.unsplash.com/..." required>
+                        <div class="image-preview-box">
+                            <img id="prodImagePreview" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80" alt="معاينة الصورة">
+                        </div>
+                    </div>
+
+                    <!-- الوصف التفصيلي -->
+                    <div class="form-group form-full-col">
+                        <label class="form-label" for="prodDescription">الوصف الشامل للمنتج</label>
+                        <textarea id="prodDescription" class="form-input" rows="3" placeholder="اكتب وصفاً جذاباً يشرح تفاصيل المنتج..."></textarea>
+                    </div>
+
+                    <!-- المواصفات والمزايا (سطر بسطر) -->
+                    <div class="form-group form-full-col">
+                        <label class="form-label" for="prodFeatures">المواصفات والمزايا (اكتب كل ميزة في سطر منفصل)</label>
+                        <textarea id="prodFeatures" class="form-input" rows="4" placeholder="عزل نشط للضوضاء ANC&#10;بطارية تدوم حتى 40 ساعة&#10;صوت محيطي 3D"></textarea>
+                    </div>
+
+                    <!-- الألوان وأسماؤها -->
+                    <div class="form-group">
+                        <label class="form-label" for="prodColors">أكواد الألوان (Hex مفصولة بفواصل)</label>
+                        <input type="text" id="prodColors" class="form-input" placeholder="#0f172a, #6366f1, #047857">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prodColorNames">أسماء الألوان (مفصولة بفواصل)</label>
+                        <input type="text" id="prodColorNames" class="form-input" placeholder="أسود كربوني, نيلي رونق, زمردي">
+                    </div>
+
+                </div>
+
+                <div class="modal-footer-actions">
+                    <button type="button" class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary);" onclick="closeProductModal()">إلغاء</button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i> حفظ ونشر في متجر رونق اليمن
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة تأكيد الحذف (Delete Confirmation Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="deleteConfirmModalOverlay" onclick="if(event.target === this) closeDeleteModal()">
+        <div class="admin-modal" style="max-width: 460px; text-align: center; padding: 2rem;">
+            <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: rgba(244, 63, 94, 0.15); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            
+            <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">تأكيد حذف المنتج</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                هل أنت متأكد من رغبتك في حذف المنتج: <br>
+                <strong id="deleteProductName" style="color: var(--text-primary);">...</strong> من متجر رونق اليمن؟
+            </p>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+                <button class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary); flex: 1;" onclick="closeDeleteModal()">إلغاء</button>
+                <button class="btn-primary" style="background: #f43f5e; flex: 1;" onclick="executeDeleteProduct()">
+                    <i class="fa-solid fa-trash-can"></i> نعم، حذف
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة تفاصيل الطلب (Order Details Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="orderDetailsModalOverlay" onclick="if(event.target === this) closeOrderDetailsModal()">
+        <div class="admin-modal" style="max-width: 600px;">
+            <button class="modal-close-btn" onclick="closeOrderDetailsModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div id="orderDetailsContent">
+                <!-- يتم حقن تفاصيل الطلب -->
+            </div>
+        </div>
+    </div>
+
+    <!-- حاوية الإشعارات المنبثقة -->
+    <div class="toast-container"></div>
+
+    <!-- ملفات الجافاسكريبت -->
+    <script src="js/data.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>
