@@ -22,7 +22,52 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAdminCoupons();
     initAdminEventListeners();
     updateAdminNameDisplay();
+    loadStoreSettingsForm();
 });
+
+// ==========================================
+// إعدادات المتجر وأرقام التواصل (Store & WhatsApp Settings)
+// ==========================================
+function loadStoreSettingsForm() {
+    const settings = getStoreSettings();
+    const waInput = document.getElementById('settingWhatsappNumber');
+    const supportPhoneInput = document.getElementById('settingSupportPhone');
+    const unsNameInput = document.getElementById('settingUnsBeneficiaryName');
+    const unsPhoneInput = document.getElementById('settingUnsPhone');
+    const unsAccountInput = document.getElementById('settingUnsAccount');
+    const thresholdInput = document.getElementById('settingFreeShippingThreshold');
+
+    if (waInput) waInput.value = settings.whatsappNumber || '967777123456';
+    if (supportPhoneInput) supportPhoneInput.value = settings.supportPhone || '+967 777 123 456';
+    if (unsNameInput) unsNameInput.value = settings.unsBeneficiaryName || 'متجر رونق اليمن المعتمد';
+    if (unsPhoneInput) unsPhoneInput.value = settings.unsPhone || '777123456';
+    if (unsAccountInput) unsAccountInput.value = settings.unsAccount || '55443322';
+    if (thresholdInput) thresholdInput.value = settings.freeShippingThreshold || 100000;
+}
+
+function handleSaveStoreSettings(e) {
+    e.preventDefault();
+
+    const waNumber = document.getElementById('settingWhatsappNumber').value.trim().replace(/[\s+-]/g, '');
+    const supportPhone = document.getElementById('settingSupportPhone').value.trim();
+    const unsBeneficiaryName = document.getElementById('settingUnsBeneficiaryName').value.trim();
+    const unsPhone = document.getElementById('settingUnsPhone').value.trim();
+    const unsAccount = document.getElementById('settingUnsAccount').value.trim();
+    const freeShippingThreshold = Number(document.getElementById('settingFreeShippingThreshold').value) || 100000;
+
+    const newSettings = {
+        whatsappNumber: waNumber,
+        supportPhone: supportPhone || '+967 777 123 456',
+        landlinePhone: '+967 1 445566',
+        unsBeneficiaryName: unsBeneficiaryName || 'متجر رونق اليمن المعتمد',
+        unsPhone: unsPhone || '777123456',
+        unsAccount: unsAccount || '55443322',
+        freeShippingThreshold: freeShippingThreshold
+    };
+
+    saveStoreSettings(newSettings);
+    showAdminToast(`تم تحديث رقم الواتساب (${waNumber}) وبيانات التواصل بنجاح!`, 'success');
+}
 
 // ==========================================
 // التحقق من الجلسة والأمان (Auth & Security)
@@ -145,9 +190,10 @@ function switchTab(tabId, clickedElement) {
         if (descEl) descEl.innerText = 'إنشاء وإدارة رموز العروض الترويجية لمتجر رونق اليمن';
         renderAdminCoupons();
     } else if (tabId === 'tab-settings') {
-        if (titleEl) titleEl.innerText = 'إعدادات الأمان وبيانات الدخول';
-        if (descEl) descEl.innerText = 'تحديث اسم المستخدم وكلمة المرور الخاصة بالإدارة';
+        if (titleEl) titleEl.innerText = 'إعدادات المتجر والتواصل والأمان';
+        if (descEl) descEl.innerText = 'تحديث رقم الواتساب لطلبات العملاء وبيانات الدخول';
         updateAdminNameDisplay();
+        loadStoreSettingsForm();
     } else {
         if (titleEl) titleEl.innerText = 'لوحة تحكم رونق اليمن';
         if (descEl) descEl.innerText = 'نظرة عامة على أداء المتجر والمؤشرات بالريال اليمني';
