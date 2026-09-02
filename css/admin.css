@@ -1,11 +1,11 @@
 /* ==========================================================================
-   لوحة تحكم إدارة متجر نخبة (Admin Dashboard Stylesheet)
+   لوحة تحكم إدارة متجر رونق اليمن (Admin Dashboard Stylesheet)
    ========================================================================== */
 
 .admin-layout {
     display: flex;
     min-height: 100vh;
-    background-color: var(--bg-primary);
+    background-color: var(--bg-main);
 }
 
 /* ==========================================================================
@@ -23,7 +23,7 @@
     right: 0;
     bottom: 0;
     z-index: 100;
-    transition: all var(--transition-normal);
+    transition: all 0.3s ease;
 }
 
 .sidebar-header {
@@ -41,6 +41,7 @@
     flex-direction: column;
     gap: 0.4rem;
     flex: 1;
+    overflow-y: auto;
 }
 
 .sidebar-link {
@@ -49,10 +50,10 @@
     gap: 0.85rem;
     padding: 0.75rem 1rem;
     border-radius: var(--radius-md);
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 0.92rem;
     color: var(--text-secondary);
-    transition: all var(--transition-fast);
+    transition: var(--transition);
     cursor: pointer;
     position: relative;
 }
@@ -69,7 +70,7 @@
 }
 
 .sidebar-link.active {
-    background: linear-gradient(90deg, rgba(217, 119, 6, 0.15) 0%, transparent 100%);
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
     color: var(--brand-primary);
     border-right: 3px solid var(--brand-primary);
 }
@@ -102,7 +103,8 @@
     font-weight: 700;
     font-size: 0.9rem;
     color: var(--text-primary);
-    transition: all var(--transition-fast);
+    transition: var(--transition);
+    cursor: pointer;
 }
 
 .back-to-store-btn:hover {
@@ -190,6 +192,11 @@
     animation: fadeInSlide 0.25s ease-out;
 }
 
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ==========================================================================
    بطاقات المؤشرات الإحصائية (Analytics KPI Cards)
    ========================================================================== */
@@ -204,59 +211,160 @@
 .stat-card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     padding: 1.5rem;
     display: flex;
     align-items: center;
     gap: 1.25rem;
     box-shadow: var(--shadow-sm);
-    transition: transform var(--transition-fast);
+    transition: var(--transition);
 }
 
 .stat-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-md);
+    border-color: var(--brand-primary);
 }
 
 .stat-icon {
-    width: 54px;
-    height: 54px;
-    border-radius: var(--radius-md);
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    flex-shrink: 0;
 }
 
-.stat-icon.gold { background: rgba(217, 119, 6, 0.15); color: var(--brand-primary); }
-.stat-icon.green { background: rgba(5, 150, 105, 0.15); color: var(--brand-secondary); }
-.stat-icon.blue { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
-.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.stat-icon.gold { background: rgba(99, 102, 241, 0.15); color: var(--brand-primary); }
+.stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--brand-success); }
+.stat-icon.blue { background: rgba(236, 72, 153, 0.15); color: var(--brand-secondary); }
+.stat-icon.purple { background: rgba(245, 158, 11, 0.15); color: var(--brand-accent); }
 
 .stat-details h3 {
     font-size: 0.85rem;
     color: var(--text-muted);
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.25rem;
 }
 
 .stat-number {
-    font-size: 1.6rem;
-    font-weight: 800;
+    font-size: 1.5rem;
+    font-weight: 900;
     font-family: var(--font-heading);
     color: var(--text-primary);
 }
 
 /* ==========================================================================
-   جداول البيانات ولوحة التحكم (Data Tables & Controls)
+   المخططات البيانية التفاعلية (Analytics Charts)
+   ========================================================================== */
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.chart-bars-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 180px;
+    padding-top: 1rem;
+    gap: 0.75rem;
+}
+
+.chart-bar-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.chart-bar-fill {
+    width: 100%;
+    max-width: 38px;
+    background: linear-gradient(180deg, var(--brand-primary), #818cf8);
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    min-height: 8px;
+}
+
+.chart-bar-fill:hover {
+    background: linear-gradient(180deg, var(--brand-secondary), #f472b6);
+}
+
+.chart-bar-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.chart-city-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.city-progress-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.city-progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.city-progress-track {
+    height: 8px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.city-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
+    border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+   جداول البيانات والأدوات (Data Tables & Toolbars)
    ========================================================================== */
 
 .table-card {
     background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-xl);
     overflow: hidden;
+    box-shadow: var(--shadow-sm);
 }
 
 .table-toolbar {
@@ -265,113 +373,105 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
     flex-wrap: wrap;
-}
-
-.table-search-box {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.4rem 0.85rem;
-    width: 320px;
-}
-
-.table-search-box input {
-    background: transparent;
-    border: none;
-    outline: none;
-    flex: 1;
+    gap: 1rem;
 }
 
 .table-filters-group {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.table-search-box {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 0.4rem 0.85rem;
+    width: 260px;
+}
+
+.table-search-box input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    padding: 0.25rem 0.5rem;
+    width: 100%;
 }
 
 .table-responsive {
     overflow-x: auto;
-    width: 100%;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
     text-align: right;
-    font-size: 0.9rem;
 }
 
 .data-table th {
     background-color: var(--bg-secondary);
-    color: var(--text-secondary);
-    font-weight: 700;
-    padding: 1rem 1.25rem;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
     border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
 }
 
 .data-table td {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--border-color-subtle);
-    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
 }
 
-.data-table tr:hover td {
-    background-color: var(--bg-secondary);
+.data-table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.04);
 }
 
-/* عناصر الجدول */
 .product-cell {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .product-thumb {
-    width: 52px;
-    height: 52px;
-    border-radius: var(--radius-sm);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
     object-fit: cover;
-    background-color: var(--bg-secondary);
-    flex-shrink: 0;
+    background: var(--bg-secondary);
 }
 
 .product-cell-info h4 {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    margin-bottom: 0.2rem;
-    max-width: 260px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.product-cell-info span {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+    margin-bottom: 0.15rem;
 }
 
 .table-actions {
     display: flex;
+    align-items: center;
     gap: 0.4rem;
 }
 
 .tbl-btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: var(--radius-sm);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
     font-size: 0.85rem;
-    background-color: var(--bg-secondary);
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
-    transition: all var(--transition-fast);
+    text-decoration: none;
 }
 
 .tbl-btn:hover {
@@ -380,28 +480,42 @@
     border-color: var(--brand-primary);
 }
 
-.tbl-btn.delete:hover {
-    background-color: var(--accent-red);
-    border-color: var(--accent-red);
-    color: white;
+.tbl-btn.whatsapp {
+    color: #25d366;
 }
 
-/* شارات الحالات (Status Badges) */
+.tbl-btn.whatsapp:hover {
+    background-color: #25d366;
+    color: white;
+    border-color: #25d366;
+}
+
+.tbl-btn.delete {
+    color: #f43f5e;
+}
+
+.tbl-btn.delete:hover {
+    background-color: #f43f5e;
+    color: white;
+    border-color: #f43f5e;
+}
+
 .status-pill {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.25rem 0.65rem;
-    border-radius: var(--radius-full);
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 700;
 }
 
-.status-pill.instock { background: rgba(5, 150, 105, 0.15); color: var(--brand-secondary); }
-.status-pill.outofstock { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
-.status-pill.pending { background: rgba(245, 158, 11, 0.15); color: var(--brand-primary); }
-.status-pill.completed { background: rgba(5, 150, 105, 0.15); color: var(--brand-secondary); }
-.status-pill.processing { background: rgba(37, 99, 235, 0.15); color: #2563eb; }
+.status-pill.instock { background: rgba(16, 185, 129, 0.15); color: var(--brand-success); }
+.status-pill.outofstock { background: rgba(244, 63, 94, 0.15); color: #f43f5e; }
+.status-pill.pending { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.status-pill.processing { background: rgba(99, 102, 241, 0.15); color: var(--brand-primary); }
+.status-pill.shipped { background: rgba(14, 165, 233, 0.15); color: #0284c7; }
+.status-pill.completed { background: rgba(16, 185, 129, 0.15); color: var(--brand-success); }
 .status-pill.cancelled { background: rgba(100, 116, 139, 0.15); color: #64748b; }
 
 /* ==========================================================================
@@ -409,7 +523,7 @@
    ========================================================================== */
 
 .admin-modal {
-    background-color: var(--bg-surface-elevated);
+    background-color: var(--bg-surface);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     width: 100%;
@@ -475,6 +589,9 @@
 @media (max-width: 1024px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    .analytics-grid {
+        grid-template-columns: 1fr;
     }
 }
 
