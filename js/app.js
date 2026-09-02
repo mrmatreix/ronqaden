@@ -1,10 +1,8 @@
 /**
- * متجر رونق الفاخر - الجمهورية اليمنية (Rawnaq Yemen Store) - المنطق البرمجي والتفاعلي
+ * متجر رونق اليمن الفاخر (Rawnaq Yemen Store) - المنطق البرمجي والتفاعلي الشامل
+ * يتضمن: تتبع الشحنات، الطلب المباشر عبر واتساب، طباعة الفواتير، وحوالة الشبكة الموحدة
  */
 
-// ==========================================
-// الحالة العامة للتطبيق (Application State)
-// ==========================================
 const AppState = {
     cart: JSON.parse(localStorage.getItem('rawnaq_yemen_cart')) || [],
     wishlist: JSON.parse(localStorage.getItem('rawnaq_yemen_wishlist')) || [],
@@ -23,6 +21,7 @@ const AppState = {
     selectedQuickViewColor: null
 };
 
+const STORE_WHATSAPP_NUMBER = "967777123456"; // رقم خدمة عملاء واتساب متجر رونق
 const FREE_SHIPPING_THRESHOLD = 100000; // شحن مجاني للطلبات أكثر من 100,000 ر.ي
 
 // ==========================================
@@ -135,10 +134,10 @@ function renderProducts() {
 
     if (filtered.length === 0) {
         grid.innerHTML = `
-            <div class="empty-products">
-                <i class="fa-solid fa-box-open"></i>
+            <div class="empty-products" style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem;">
+                <i class="fa-solid fa-box-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
                 <h3>لم يتم العثور على أي منتجات مطابقة في رونق!</h3>
-                <p>يرجى تجربة معايير بحث أو تصفية مختلفة.</p>
+                <p style="color: var(--text-muted); margin-bottom: 1rem;">يرجى تجربة معايير بحث أو تصفية مختلفة.</p>
                 <button class="btn-primary" onclick="resetAllFilters()">إعادة ضبط الفلاتر</button>
             </div>
         `;
@@ -148,6 +147,7 @@ function renderProducts() {
     grid.innerHTML = filtered.map(product => {
         const isWishlisted = AppState.wishlist.includes(product.id);
         const inCartItem = AppState.cart.find(item => item.id === product.id);
+        const isLowStock = product.inStock && product.stockCount && product.stockCount <= 5;
         
         return `
             <div class="product-card" data-id="${product.id}">
@@ -174,15 +174,22 @@ function renderProducts() {
                         <span class="reviews-count">(${product.reviewsCount || 10})</span>
                     </div>
 
+                    ${isLowStock ? `<div class="stock-scarcity-pill"><i class="fa-solid fa-fire"></i> متبقي ${product.stockCount} قطع فقط بالمخزون!</div>` : ''}
+
                     <div class="product-price-box">
                         <span class="current-price">${product.price.toLocaleString()} ر.ي</span>
                         ${product.originalPrice ? `<span class="original-price">${product.originalPrice.toLocaleString()} ر.ي</span>` : ''}
                     </div>
 
-                    <button class="add-to-cart-btn ${inCartItem ? 'in-cart' : ''}" onclick="addToCart(${product.id})">
-                        <i class="fa-solid ${inCartItem ? 'fa-check' : 'fa-cart-shopping'}"></i>
-                        <span>${inCartItem ? `في السلة (${inCartItem.quantity})` : 'أضف للسلة'}</span>
-                    </button>
+                    <div class="card-bottom-actions">
+                        <button class="add-to-cart-btn ${inCartItem ? 'in-cart' : ''}" onclick="addToCart(${product.id})">
+                            <i class="fa-solid ${inCartItem ? 'fa-check' : 'fa-cart-shopping'}"></i>
+                            <span>${inCartItem ? `في السلة (${inCartItem.quantity})` : 'أضف للسلة'}</span>
+                        </button>
+                        <button class="btn-whatsapp-direct" onclick="orderProductViaWhatsApp(${product.id})" title="طلب فوري عبر واتساب">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 1.1rem;"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -317,10 +324,10 @@ function updateCartUI() {
 
     if (AppState.cart.length === 0) {
         container.innerHTML = `
-            <div class="empty-products" style="border: none; padding: 3rem 1rem;">
-                <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; color: var(--brand-primary);"></i>
+            <div class="empty-products" style="border: none; padding: 3rem 1rem; text-align: center;">
+                <i class="fa-solid fa-cart-shopping" style="font-size: 3rem; color: var(--brand-primary); margin-bottom: 1rem;"></i>
                 <h3>سلة رونق فارغة</h3>
-                <p>تصفح أحدث المنتجات الفاخرة وأضفها لسلتك الآن!</p>
+                <p style="color: var(--text-muted);">تصفح أحدث المنتجات الفاخرة وأضفها لسلتك الآن!</p>
             </div>
         `;
         if (subtotalEl) subtotalEl.innerText = '0 ر.ي';
@@ -384,7 +391,7 @@ function updateCartUI() {
     if (progressFill) progressFill.style.width = `${progressPercent}%`;
     if (progressText) {
         if (remainingForFreeShipping <= 0) {
-            progressText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--brand-secondary);"></i> مبارك! حصلت على <strong>شحن مجاني</strong> لطلبك';
+            progressText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: var(--brand-success);"></i> مبارك! حصلت على <strong>شحن مجاني</strong> لطلبك';
         } else {
             progressText.innerHTML = `<i class="fa-solid fa-truck-fast"></i> أضف بقيمة <strong>${remainingForFreeShipping.toLocaleString()} ر.ي</strong> للحصول على شحن مجاني`;
         }
@@ -424,6 +431,152 @@ function toggleCartDrawer(open = null) {
         drawer.classList.remove('active');
         overlay.classList.remove('active');
     }
+}
+
+// ==========================================
+// الطلب المباشر بنقرة واحدة عبر واتساب (1-Click WhatsApp Order)
+// ==========================================
+function orderProductViaWhatsApp(productId) {
+    const allProducts = getStoreProducts();
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    const message = `مرحباً متجر رونق اليمن 💎%0Aأرغب في طلب المنتج التالي:%0A🛍️ *${product.name}*%0A💰 السعر: *${product.price.toLocaleString()} ر.ي*%0A🔗 الرابط: ${window.location.origin + window.location.pathname}%0A%0Aيرجى إفادتي بتفاصيل الشحن والتوصيل.`;
+    const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
+    window.open(waUrl, '_blank');
+}
+
+function sendCartViaWhatsApp() {
+    if (AppState.cart.length === 0) {
+        showToast('السلة فارغة، يرجى إضافة منتجات أولاً', 'error', 'fa-cart-shopping');
+        return;
+    }
+
+    const allProducts = getStoreProducts();
+    let itemsText = '';
+    let subtotal = 0;
+
+    AppState.cart.forEach((item, index) => {
+        const prod = allProducts.find(p => p.id === item.id);
+        if (prod) {
+            const itemTotal = prod.price * item.quantity;
+            subtotal += itemTotal;
+            itemsText += `${index + 1}. *${prod.name}* (الكمية: ${item.quantity}) - ${itemTotal.toLocaleString()} ر.ي%0A`;
+        }
+    });
+
+    let discount = AppState.appliedCoupon ? (subtotal * AppState.appliedCoupon.discount) : 0;
+    let finalTotal = subtotal - discount;
+
+    const message = `مرحباً متجر رونق اليمن 💎%0Aأرغب في إتمام طلب محتويات السلة:%0A%0A${itemsText}%0A💵 *المجموع الإجمالي: ${finalTotal.toLocaleString()} ر.ي*%0A%0Aيرجى تأكيد استلام الطلب وتزويدي بحساب حوالة الشبكة الموحدة أو التوصيل.`;
+    const waUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${message}`;
+    window.open(waUrl, '_blank');
+}
+
+// ==========================================
+// تتبع الطلبات والشحنات (Order Tracking System)
+// ==========================================
+function handleTrackOrderSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('trackingOrderInput');
+    if (!input) return;
+
+    const orderId = input.value.trim().toUpperCase();
+    if (!orderId) {
+        showToast('يرجى إدخال رقم الطلب للبحث', 'error', 'fa-magnifying-glass');
+        return;
+    }
+
+    const orders = getStoreOrders();
+    const order = orders.find(o => o.id.toUpperCase() === orderId || o.id.replace('RNQ-YE-', '').toUpperCase() === orderId);
+
+    const resultBox = document.getElementById('trackingResultBox');
+    if (!resultBox) return;
+
+    if (!order) {
+        resultBox.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #f43f5e; background: rgba(244, 63, 94, 0.08); border-radius: var(--radius-lg); border: 1px solid rgba(244,63,94,0.2);">
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                <h4>لم يتم العثور على طلب بالرقم "${orderId}"</h4>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">يرجى التأكد من كتابة رقم الطلب كما هو موضح في رسالة التأكيد (مثال: RNQ-YE-89241)</p>
+            </div>
+        `;
+        resultBox.style.display = 'block';
+        return;
+    }
+
+    // حساب الخطوة الحالية
+    const statusSteps = ['pending', 'processing', 'shipped', 'completed'];
+    const currentStatus = order.status || 'pending';
+    let stepIndex = statusSteps.indexOf(currentStatus);
+    if (stepIndex === -1 && currentStatus === 'cancelled') stepIndex = -1;
+
+    let progressPercent = 15;
+    if (stepIndex === 1) progressPercent = 45;
+    if (stepIndex === 2) progressPercent = 75;
+    if (stepIndex === 3) progressPercent = 100;
+
+    resultBox.innerHTML = `
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-md);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                <div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">رقم الشحنة:</span>
+                    <h3 style="color: var(--brand-primary); font-family: var(--font-heading); font-size: 1.3rem;">${order.id}</h3>
+                    <div style="font-size: 0.85rem; color: var(--text-secondary);">العميل: <strong>${order.customerName}</strong> (${order.customerCity})</div>
+                </div>
+                <div style="text-align: left;">
+                    <button class="btn-outline" style="padding: 0.4rem 0.9rem; font-size: 0.82rem;" onclick="openInvoiceModal('${order.id}')">
+                        <i class="fa-solid fa-print"></i> عرض الفاتورة وسند الاستلام
+                    </button>
+                </div>
+            </div>
+
+            <!-- شريط الخطوات التفاعلي -->
+            <div class="tracking-timeline">
+                <div class="tracking-progress-line" style="width: ${progressPercent}%;"></div>
+
+                <div class="tracking-step ${stepIndex >= 0 ? 'completed' : ''} ${stepIndex === 0 ? 'active' : ''}">
+                    <div class="step-icon-box"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="step-title">تم استلام الطلب</div>
+                    <div class="step-time">${order.date ? order.date.substring(5, 16) : 'مكتمل'}</div>
+                </div>
+
+                <div class="tracking-step ${stepIndex >= 1 ? 'completed' : ''} ${stepIndex === 1 ? 'active' : ''}">
+                    <div class="step-icon-box"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="step-title">قيد التجهيز والتغليف</div>
+                    <div class="step-time">${stepIndex >= 1 ? 'تم التجهيز' : 'قريباً'}</div>
+                </div>
+
+                <div class="tracking-step ${stepIndex >= 2 ? 'completed' : ''} ${stepIndex === 2 ? 'active' : ''}">
+                    <div class="step-icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div class="step-title">خرج مع المندوب للشحن</div>
+                    <div class="step-time">${stepIndex >= 2 ? 'جاري التوصيل' : 'بانتظار الشحن'}</div>
+                </div>
+
+                <div class="tracking-step ${stepIndex >= 3 ? 'completed' : ''} ${stepIndex === 3 ? 'active' : ''}">
+                    <div class="step-icon-box"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="step-title">تم التسليم بنجاح</div>
+                    <div class="step-time">${stepIndex >= 3 ? 'مستلم' : 'عند الوصول'}</div>
+                </div>
+            </div>
+
+            <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-md); font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <i class="fa-solid fa-location-dot" style="color: var(--brand-primary);"></i>
+                    عنوان التوصيل: <strong>${order.customerCity} - ${order.customerAddress || 'الشارع العام'}</strong>
+                </div>
+                <div>
+                    طريقة الدفع: <strong>${order.paymentMethod}</strong>
+                    ${order.voucherNumber ? `<span style="background: var(--brand-primary-light); color: var(--brand-primary); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); font-size: 0.8rem; margin-right: 0.4rem;">سند: ${order.voucherNumber}</span>` : ''}
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    resultBox.style.display = 'block';
+    showToast(`تم عرض بيانات تتبع الطلب ${order.id}`, 'info', 'fa-truck-fast');
 }
 
 // ==========================================
@@ -470,6 +623,11 @@ function openQuickView(productId) {
 
     const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : [product.image];
 
+    // منتجات مشابهة مقترحة
+    const relatedProducts = allProducts
+        .filter(p => p.category === product.category && p.id !== product.id)
+        .slice(0, 3);
+
     container.innerHTML = `
         <div class="quickview-grid">
             <div class="quickview-gallery">
@@ -485,9 +643,9 @@ function openQuickView(productId) {
                 <span class="product-category">${getCategoryName(product.category)}</span>
                 <h2>${product.name}</h2>
                 
-                <div class="product-rating" style="margin-bottom: 1rem;">
+                <div class="product-rating" style="margin-bottom: 0.75rem;">
                     <div class="stars">${renderStars(product.rating || 5)}</div>
-                    <span class="reviews-count">(${product.reviewsCount || 12} تقييم حقيقي)</span>
+                    <span class="reviews-count">(${product.reviewsCount || 12} تقييم حقيقي من اليمن)</span>
                 </div>
 
                 <div class="product-price-box" style="margin-bottom: 1.25rem;">
@@ -504,26 +662,46 @@ function openQuickView(productId) {
                 ` : ''}
 
                 ${product.colors && product.colors.length > 0 ? `
-                    <div class="color-options">
-                        <div class="color-options-title">اللون المتاح: <span id="selectedColorName">${AppState.selectedQuickViewColor}</span></div>
-                        <div class="color-dots">
+                    <div class="color-options" style="margin-top: 1rem;">
+                        <div class="color-options-title" style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.4rem;">اللون المتاح: <span id="selectedColorName" style="color: var(--brand-primary);">${AppState.selectedQuickViewColor}</span></div>
+                        <div class="color-dots" style="display: flex; gap: 0.5rem;">
                             ${product.colors.map((color, idx) => `
-                                <div class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${color};" onclick="selectQuickViewColor('${product.colorNames ? product.colorNames[idx] : 'افتراضي'}', this)"></div>
+                                <div class="color-dot ${idx === 0 ? 'active' : ''}" style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color);" onclick="selectQuickViewColor('${product.colorNames ? product.colorNames[idx] : 'افتراضي'}', this)"></div>
                             `).join('')}
                         </div>
                     </div>
                 ` : ''}
 
-                <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1.75rem;">
+                <div style="display: flex; gap: 0.75rem; align-items: center; margin-top: 1.5rem; flex-wrap: wrap;">
                     <button class="btn-primary" style="flex: 1;" onclick="addQuickViewToCart()">
                         <i class="fa-solid fa-cart-shopping"></i> أضف إلى السلة
                     </button>
-                    <button class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary);" onclick="toggleWishlist(${product.id})">
+                    <button class="btn-whatsapp-direct" style="padding: 0.75rem 1.25rem;" onclick="orderProductViaWhatsApp(${product.id})">
+                        <i class="fa-brands fa-whatsapp"></i> طلب بالواتساب
+                    </button>
+                    <button class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary); padding: 0.75rem;" onclick="toggleWishlist(${product.id})">
                         <i class="fa-${AppState.wishlist.includes(product.id) ? 'solid' : 'regular'} fa-heart" style="color: #f43f5e;"></i>
                     </button>
                 </div>
             </div>
         </div>
+
+        ${relatedProducts.length > 0 ? `
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                <h4 style="font-size: 1.1rem; margin-bottom: 1rem;">منتجات مشابهة قد تعجبك:</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                    ${relatedProducts.map(rp => `
+                        <div style="display: flex; gap: 0.75rem; align-items: center; background: var(--bg-secondary); padding: 0.6rem; border-radius: var(--radius-md); cursor: pointer;" onclick="openQuickView(${rp.id})">
+                            <img src="${rp.image}" style="width: 50px; height: 50px; border-radius: var(--radius-sm); object-fit: cover;">
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 700; line-height: 1.2;">${rp.name.substring(0, 20)}...</div>
+                                <div style="font-size: 0.8rem; color: var(--brand-primary); font-weight: 800;">${rp.price.toLocaleString()} ر.ي</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        ` : ''}
     `;
 
     overlay.classList.add('active');
@@ -598,7 +776,7 @@ function openCheckoutModal() {
         if (foundCode) couponInput.value = foundCode;
         if (couponMsg) {
             couponMsg.style.display = 'block';
-            couponMsg.style.color = 'var(--brand-secondary)';
+            couponMsg.style.color = 'var(--brand-success)';
             couponMsg.innerHTML = `<i class="fa-solid fa-check"></i> ${AppState.appliedCoupon.desc}`;
         }
     } else {
@@ -607,6 +785,7 @@ function openCheckoutModal() {
     }
 
     updateCheckoutTotals();
+    handlePaymentMethodChange();
     overlay.classList.add('active');
 }
 
@@ -664,7 +843,7 @@ function applyCheckoutCouponCode() {
         updateCartUI();
         if (msgEl) {
             msgEl.style.display = 'block';
-            msgEl.style.color = 'var(--brand-secondary)';
+            msgEl.style.color = 'var(--brand-success)';
             msgEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> تم تطبيق ${coupons[code].desc}!`;
         }
         showToast(`تم تطبيق ${coupons[code].desc} بنجاح!`, 'success', 'fa-tag');
@@ -675,6 +854,18 @@ function applyCheckoutCouponCode() {
             msgEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> رمز الكوبون غير صالح أو منتهي';
         }
         showToast('رمز الكوبون غير صالح أو منتهي الصلاحية', 'error', 'fa-triangle-exclamation');
+    }
+}
+
+function handlePaymentMethodChange() {
+    const selectedRadio = document.querySelector('input[name="paymentMethod"]:checked');
+    const unsBox = document.getElementById('unsInstructionsBox');
+    if (!selectedRadio || !unsBox) return;
+
+    if (selectedRadio.value === 'unified_network') {
+        unsBox.style.display = 'block';
+    } else {
+        unsBox.style.display = 'none';
     }
 }
 
@@ -690,6 +881,7 @@ function handleCheckoutSubmit(e) {
     const phoneInput = document.getElementById('customerPhone');
     const cityInput = document.getElementById('customerCity');
     const addressInput = document.getElementById('customerAddress');
+    const voucherInput = document.getElementById('unsVoucherNumber');
     const paymentRadio = document.querySelector('input[name="paymentMethod"]:checked');
 
     if (!nameInput.value || !phoneInput.value || !cityInput.value) {
@@ -741,6 +933,7 @@ function handleCheckoutSubmit(e) {
         customerCity: cityInput.options[cityInput.selectedIndex].text,
         customerAddress: addressInput ? addressInput.value : '',
         paymentMethod: paymentRadio ? (paymentMethodMap[paymentRadio.value] || paymentRadio.value) : 'كاش عند الاستلام',
+        voucherNumber: (paymentRadio && paymentRadio.value === 'unified_network' && voucherInput) ? voucherInput.value.trim() : null,
         items: orderItems,
         subtotal: subtotal,
         discount: discount,
@@ -755,7 +948,10 @@ function handleCheckoutSubmit(e) {
     
     const successOverlay = document.getElementById('orderSuccessOverlay');
     const orderIdEl = document.getElementById('confirmedOrderId');
+    const invoiceBtn = document.getElementById('successInvoiceBtn');
+    
     if (orderIdEl) orderIdEl.innerText = orderId;
+    if (invoiceBtn) invoiceBtn.setAttribute('onclick', `openInvoiceModal('${orderId}')`);
     if (successOverlay) successOverlay.classList.add('active');
 
     AppState.cart = [];
@@ -770,6 +966,116 @@ function handleCheckoutSubmit(e) {
 function closeSuccessModal() {
     const successOverlay = document.getElementById('orderSuccessOverlay');
     if (successOverlay) successOverlay.classList.remove('active');
+}
+
+// ==========================================
+// طباعة الفاتورة وسند الاستلام (Invoice Generator)
+// ==========================================
+function openInvoiceModal(orderId) {
+    const orders = getStoreOrders();
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+
+    const overlay = document.getElementById('invoiceModalOverlay');
+    const content = document.getElementById('invoiceContent');
+    if (!overlay || !content) return;
+
+    content.innerHTML = `
+        <div class="invoice-card" id="printableInvoiceArea">
+            <div class="invoice-header">
+                <div>
+                    <h2 style="color: var(--brand-primary); font-size: 1.6rem; font-family: var(--font-heading);">رَوْنَـقْ ✦ RAWNAQ YEMEN</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">فاتورة وسند استلام طلب إلكتروني معتمد</p>
+                    <p style="font-size: 0.82rem; color: var(--text-muted);">الجمهورية اليمنية - صنعاء / عدن</p>
+                </div>
+                <div style="text-align: left;">
+                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--brand-primary);">${order.id}</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">التاريخ: ${order.date || 'اليوم'}</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted);">الحالة: <span class="status-pill ${order.status}">${order.status === 'completed' ? 'تم التسليم' : 'قيد المعالجة'}</span></div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; background: #f8fafc; padding: 1rem; border-radius: var(--radius-md);">
+                <div>
+                    <strong>بيانات العميل:</strong>
+                    <div style="font-size: 0.9rem; margin-top: 0.2rem;">الاسم: <strong>${order.customerName}</strong></div>
+                    <div style="font-size: 0.9rem;">الهاتف: <span style="direction: ltr; display: inline-block;">${order.customerPhone}</span></div>
+                </div>
+                <div>
+                    <strong>وجهة الشحن والتسليم:</strong>
+                    <div style="font-size: 0.9rem; margin-top: 0.2rem;">المحافظة: <strong>${order.customerCity}</strong></div>
+                    <div style="font-size: 0.9rem;">العنوان: ${order.customerAddress || 'الشارع العام'}</div>
+                    <div style="font-size: 0.9rem;">طريقة الدفع: <strong>${order.paymentMethod}</strong></div>
+                    ${order.voucherNumber ? `<div style="font-size: 0.85rem; color: var(--brand-primary);">رقم سند الحوالة: <strong>${order.voucherNumber}</strong></div>` : ''}
+                </div>
+            </div>
+
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المنتج والمواصفات</th>
+                        <th>الكمية</th>
+                        <th>السعر الفردي</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${(order.items || []).map((item, idx) => `
+                        <tr>
+                            <td>${idx + 1}</td>
+                            <td><strong>${item.name}</strong> ${item.color ? `<span style="font-size: 0.78rem; color: #64748b;">(اللون: ${item.color})</span>` : ''}</td>
+                            <td>${item.quantity}</td>
+                            <td>${(item.price || 0).toLocaleString()} ر.ي</td>
+                            <td><strong>${((item.price || 0) * item.quantity).toLocaleString()} ر.ي</strong></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 1.5rem; border-top: 2px solid #e2e8f0; padding-top: 1rem;">
+                <div style="font-size: 0.8rem; color: #64748b; line-height: 1.5;">
+                    * هذه الفاتورة صادرة إلكترونياً من متجر رونق اليمن.<br>
+                    * ضمان الفحص والاستبدال يسري لمدة 14 يوماً من تاريخ الاستلام.<br>
+                    * لخدمة العملاء: +967 777 123 456
+                </div>
+                <div style="text-align: left; min-width: 200px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem;">
+                        <span>المجموع الفرعي:</span>
+                        <strong>${(order.subtotal || order.total || 0).toLocaleString()} ر.ي</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem; color: #10b981;">
+                        <span>الشحن والتوصيل:</span>
+                        <strong>مجاني</strong>
+                    </div>
+                    ${order.discount ? `
+                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.3rem; color: #ec4899;">
+                            <span>خصم الكوبون:</span>
+                            <strong>- ${(order.discount).toLocaleString()} ر.ي</strong>
+                        </div>
+                    ` : ''}
+                    <div style="display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 900; color: #6366f1; border-top: 1px solid #cbd5e1; padding-top: 0.5rem; margin-top: 0.5rem;">
+                        <span>الإجمالي المطلوب:</span>
+                        <span>${(order.total || order.subtotal || 0).toLocaleString()} ر.ي</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-print" style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="btn-outline" onclick="closeInvoiceModal()">إغلاق</button>
+                <button class="btn-primary" onclick="window.print()">
+                    <i class="fa-solid fa-print"></i> طباعة الفاتورة الآن
+                </button>
+            </div>
+        </div>
+    `;
+
+    overlay.classList.add('active');
+}
+
+function closeInvoiceModal() {
+    const overlay = document.getElementById('invoiceModalOverlay');
+    if (overlay) overlay.classList.remove('active');
 }
 
 // ==========================================
@@ -826,8 +1132,8 @@ function initSearch() {
                 <div class="search-item" onclick="openQuickView(${p.id})">
                     <img src="${p.image}" class="search-item-img" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80'">
                     <div class="search-item-info">
-                        <div class="search-item-name">${p.name}</div>
-                        <div class="search-item-price">${p.price.toLocaleString()} ر.ي</div>
+                        <div class="search-item-name" style="font-weight: 700; font-size: 0.9rem;">${p.name}</div>
+                        <div class="search-item-price" style="color: var(--brand-primary); font-weight: 800; font-size: 0.85rem;">${p.price.toLocaleString()} ر.ي</div>
                     </div>
                 </div>
             `).join('');
@@ -898,6 +1204,13 @@ function initEventListeners() {
             selectCategory(e.target.value);
         });
     });
+
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', handlePaymentMethodChange);
+    });
+
+    const trackingForm = document.getElementById('orderTrackingForm');
+    if (trackingForm) trackingForm.addEventListener('submit', handleTrackOrderSubmit);
 
     initSearch();
 
