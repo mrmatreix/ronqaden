@@ -373,25 +373,84 @@
                 </div>
 
                 <!-- ==========================================
-                     القسم 5: إعدادات الأمان وتغيير كلمة المرور (Settings Tab)
+                     القسم 5: إعدادات المتجر والتواصل والأمان (Settings Tab)
                      ========================================== -->
                 <div id="tab-settings" class="tab-content">
                     
-                    <div style="max-width: 600px; margin: 0 auto;">
+                    <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 2rem;">
+                        
+                        <!-- إعدادات رقم الواتساب والتواصل الرسمي للمتجر -->
                         <div class="table-card" style="padding: 2rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                                <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: rgba(37, 211, 102, 0.15); color: #25d366; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div>
+                                    <h3 style="font-size: 1.25rem;">إعدادات الواتساب والتواصل مع العملاء</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">تحرير الرقم الذي يستقبل طلبات واستفسارات العملاء في اليمن</p>
+                                </div>
+                            </div>
+
+                            <form id="storeSettingsForm" onsubmit="handleSaveStoreSettings(event)">
+                                <div class="form-group">
+                                    <label class="form-label" for="settingWhatsappNumber">
+                                        <i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> رقم الواتساب لطلبات العملاء (مع مفتاح اليمن 967) *
+                                    </label>
+                                    <input type="text" id="settingWhatsappNumber" class="form-input" style="direction: ltr; text-align: right;" placeholder="مثال: 967777123456 أو 777123456" required>
+                                    <small style="font-size: 0.75rem; color: var(--text-muted);">هذا هو الرقم الذي سيتم تحويل العميل إليه عند النقر على "طلب بالواتساب" أو الزر العائم.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="settingSupportPhone">رقم هاتف الاتصال المباشر لخدمة العملاء</label>
+                                    <input type="text" id="settingSupportPhone" class="form-input" style="direction: ltr; text-align: right;" placeholder="+967 777 123 456">
+                                </div>
+
+                                <div style="border-top: 1px dashed var(--border-color); padding-top: 1rem; margin-top: 1rem; margin-bottom: 1rem;">
+                                    <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--brand-primary);"><i class="fa-solid fa-money-bill-transfer"></i> بيانات استلام حوالة الشبكة الموحدة (UNS):</h4>
+                                    
+                                    <div class="form-group">
+                                        <label class="form-label" for="settingUnsBeneficiaryName">اسم المستلم المعتمد للحوالة</label>
+                                        <input type="text" id="settingUnsBeneficiaryName" class="form-input" placeholder="متجر رونق اليمن المعتمد">
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div class="form-group">
+                                            <label class="form-label" for="settingUnsPhone">رقم هاتف المستلم</label>
+                                            <input type="text" id="settingUnsPhone" class="form-input" style="direction: ltr; text-align: right;" placeholder="777123456">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label" for="settingUnsAccount">رقم الحساب / المحفظة</label>
+                                            <input type="text" id="settingUnsAccount" class="form-input" style="direction: ltr; text-align: right;" placeholder="55443322">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="settingFreeShippingThreshold">قيمة الحد الأدنى للشحن المجاني (ر.ي)</label>
+                                    <input type="number" id="settingFreeShippingThreshold" class="form-input" placeholder="100000">
+                                </div>
+
+                                <button type="submit" class="btn-primary" style="width: 100%; padding: 0.85rem;">
+                                    <i class="fa-solid fa-floppy-disk"></i> حفظ وتحديث إعدادات التواصل فورياً
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- إعدادات الأمان وتغيير كلمة المرور -->
+                        <div class="table-card" style="padding: 2rem; height: fit-content;">
                             <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
                                 <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
                                     <i class="fa-solid fa-user-shield"></i>
                                 </div>
                                 <div>
-                                    <h3 style="font-size: 1.25rem;">إعدادات الأمان وبيانات الدخول</h3>
-                                    <p style="font-size: 0.85rem; color: var(--text-muted);">يمكنك تحديث اسم المستخدم وكلمة المرور الخاصة بلوحة التحكم من هنا</p>
+                                    <h3 style="font-size: 1.25rem;">بيانات دخول المدير</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">تحديث اسم المستخدم وكلمة المرور</p>
                                 </div>
                             </div>
 
                             <form id="changeCredentialsForm" onsubmit="handleChangeCredentials(event)">
                                 <div class="form-group">
-                                    <label class="form-label" for="currentAdminUsername">اسم المستخدم الحالي / الجديد</label>
+                                    <label class="form-label" for="currentAdminUsername">اسم المستخدم</label>
                                     <input type="text" id="currentAdminUsername" class="form-input" required>
                                 </div>
 
@@ -402,19 +461,20 @@
 
                                 <div class="form-group">
                                     <label class="form-label" for="newAdminPassword">كلمة المرور الجديدة *</label>
-                                    <input type="password" id="newAdminPassword" class="form-input" placeholder="أدخل كلمة المرور الجديدة (4 أحرف على الأقل)" minlength="4" required>
+                                    <input type="password" id="newAdminPassword" class="form-input" placeholder="كلمة المرور الجديدة (4 أحرف+)" minlength="4" required>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="form-label" for="confirmNewAdminPassword">تأكيد كلمة المرور الجديدة *</label>
-                                    <input type="password" id="confirmNewAdminPassword" class="form-input" placeholder="أعد إدخال كلمة المرور الجديدة" minlength="4" required>
+                                    <input type="password" id="confirmNewAdminPassword" class="form-input" placeholder="تأكيد كلمة المرور" minlength="4" required>
                                 </div>
 
-                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
-                                    <i class="fa-solid fa-shield-check"></i> حفظ بيانات الدخول الجديدة
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem; padding: 0.85rem; background: linear-gradient(135deg, var(--brand-secondary), #f43f5e);">
+                                    <i class="fa-solid fa-shield-check"></i> حفظ بيانات الدخول
                                 </button>
                             </form>
                         </div>
+
                     </div>
 
                 </div>
