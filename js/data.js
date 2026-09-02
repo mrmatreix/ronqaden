@@ -325,6 +325,48 @@ const DEFAULT_ORDERS = [
     }
 ];
 
+const DEFAULT_USERS = [
+    {
+        id: 1,
+        username: 'admin',
+        password: 'admin123',
+        fullName: 'المدير العام',
+        email: 'admin@rawnaq-ye.com',
+        role: 'super_admin',
+        roleTitle: 'مدير عام للنظام (كامل الصلاحيات)',
+        status: 'active',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+        permissions: ['manage_products', 'manage_orders', 'manage_coupons', 'manage_settings', 'manage_users'],
+        createdAt: '2026-09-01'
+    },
+    {
+        id: 2,
+        username: 'shipping_lead',
+        password: 'shipping123',
+        fullName: 'طارق الأهدل',
+        email: 'shipping@rawnaq-ye.com',
+        role: 'orders_manager',
+        roleTitle: 'مسؤول الطلبات والشحن',
+        status: 'active',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+        permissions: ['manage_orders'],
+        createdAt: '2026-09-02'
+    },
+    {
+        id: 3,
+        username: 'inventory_lead',
+        password: 'inventory123',
+        fullName: 'ياسر اليافعي',
+        email: 'inventory@rawnaq-ye.com',
+        role: 'inventory_manager',
+        roleTitle: 'مسؤول المنتجات والمخزون',
+        status: 'active',
+        avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80',
+        permissions: ['manage_products'],
+        createdAt: '2026-09-02'
+    }
+];
+
 const DEFAULT_STORE_SETTINGS = {
     whatsappNumber: '967777123456',
     supportPhone: '+967 777 123 456',
@@ -344,8 +386,47 @@ const STORAGE_KEYS = {
     CATEGORIES: 'rawnaq_yemen_categories',
     COUPONS: 'rawnaq_yemen_coupons',
     ORDERS: 'rawnaq_yemen_orders',
-    SETTINGS: 'rawnaq_yemen_settings'
+    SETTINGS: 'rawnaq_yemen_settings',
+    USERS: 'rawnaq_yemen_users',
+    CURRENT_USER: 'rawnaq_current_user'
 };
+
+// إدارة المستخدمين وفريق العمل
+function getStoreUsers() {
+    const data = localStorage.getItem(STORAGE_KEYS.USERS);
+    if (!data) {
+        saveStoreUsers(DEFAULT_USERS);
+        return DEFAULT_USERS;
+    }
+    try {
+        return JSON.parse(data);
+    } catch (e) {
+        return DEFAULT_USERS;
+    }
+}
+
+function saveStoreUsers(users) {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+}
+
+function getCurrentUser() {
+    const data = localStorage.getItem(STORAGE_KEYS.CURRENT_USER) || sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    if (data) {
+        try {
+            return JSON.parse(data);
+        } catch (e) {}
+    }
+    const users = getStoreUsers();
+    return users[0] || DEFAULT_USERS[0];
+}
+
+function setCurrentUser(user, persistInLocalStorage = false) {
+    const json = JSON.stringify(user);
+    sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, json);
+    if (persistInLocalStorage) {
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, json);
+    }
+}
 
 // إعدادات المتجر والتواصل
 function getStoreSettings() {
