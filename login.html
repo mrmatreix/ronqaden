@@ -203,11 +203,12 @@
 
         <!-- بطاقة بيانات الدخول الافتراضية -->
         <div class="credentials-hint-card">
-            <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--brand-primary);">
-                <i class="fa-solid fa-shield-halved"></i> بيانات الدخول الافتراضية للإدارة:
+            <div style="display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--brand-primary); margin-bottom: 0.2rem;">
+                <i class="fa-solid fa-users-gear"></i> حسابات الدخول التجريبية حسب الصلاحية:
             </div>
-            <div>اسم المستخدم: <strong>admin</strong></div>
-            <div>كلمة المرور: <strong>admin123</strong></div>
+            <div style="font-size: 0.78rem;">👑 <strong>المدير العام</strong>: admin / admin123</div>
+            <div style="font-size: 0.78rem;">📦 <strong>مسؤول الشحن والطلبات</strong>: shipping_lead / shipping123</div>
+            <div style="font-size: 0.78rem;">🏷️ <strong>مسؤول المنتجات والمخزون</strong>: inventory_lead / inventory123</div>
         </div>
 
         <!-- نموذج تسجيل الدخول -->
@@ -216,7 +217,7 @@
             <div class="form-group">
                 <label class="form-label" for="adminUsername">اسم المستخدم أو البريد الإلكتروني</label>
                 <div class="input-icon-wrapper">
-                    <input type="text" id="adminUsername" class="form-input" placeholder="admin" autocomplete="username" required autofocus>
+                    <input type="text" id="adminUsername" class="form-input" placeholder="admin أو shipping_lead" autocomplete="username" required autofocus>
                     <i class="fa-solid fa-user lead-icon"></i>
                 </div>
             </div>
@@ -259,25 +260,15 @@
     <!-- حاوية الإشعارات المنبثقة -->
     <div class="toast-container"></div>
 
+    <!-- استدعاء ملف البيانات وقاعدة المستخدمين -->
+    <script src="js/data.js"></script>
+
     <!-- منطق التحقق وتسجيل الدخول -->
     <script>
-        // إعداد بيانات المدير الافتراضية إذا لم تكن موجودة
-        const AUTH_CONFIG = {
-            USER_KEY: 'rawnaq_admin_username',
-            PASS_KEY: 'rawnaq_admin_password',
-            SESSION_KEY: 'rawnaq_admin_authenticated'
-        };
-
-        // تعيين البيانات الافتراضية في أول مرة
-        if (!localStorage.getItem(AUTH_CONFIG.USER_KEY)) {
-            localStorage.setItem(AUTH_CONFIG.USER_KEY, 'admin');
-        }
-        if (!localStorage.getItem(AUTH_CONFIG.PASS_KEY)) {
-            localStorage.setItem(AUTH_CONFIG.PASS_KEY, 'admin123');
-        }
+        const AUTH_SESSION_KEY = 'rawnaq_admin_authenticated';
 
         // إذا كان مسجلاً الدخول بالفعل، نقله للوحة التحكم
-        if (sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true' || localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true') {
+        if (sessionStorage.getItem(AUTH_SESSION_KEY) === 'true' || localStorage.getItem(AUTH_SESSION_KEY) === 'true') {
             window.location.href = 'admin.html';
         }
 
@@ -305,24 +296,36 @@
             const rememberMe = document.getElementById('rememberMe').checked;
             const submitBtn = document.getElementById('loginSubmitBtn');
 
-            const validUser = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
-            const validPass = localStorage.getItem(AUTH_CONFIG.PASS_KEY) || 'admin123';
+            const users = getStoreUsers();
+            const matchedUser = users.find(u => 
+                (u.username.toLowerCase() === usernameInput.toLowerCase() || (u.email && u.email.toLowerCase() === usernameInput.toLowerCase())) && 
+                u.password === passwordInput
+            );
 
             // حالة التحميل في الزر
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق...';
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق من الصلاحيات...';
 
             setTimeout(() => {
-                if (usernameInput === validUser && passwordInput === validPass) {
-                    // نجاح الدخول
-                    sessionStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
-                    if (rememberMe) {
-                        localStorage.setItem(AUTH_CONFIG.SESSION_KEY, 'true');
-                    } else {
-                        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+                if (matchedUser) {
+                    if (matchedUser.status === 'inactive') {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول إلى لوحة التحكم';
+                        showToast('هذا الحساب معطل مؤقتاً من قبل إدارة متجر رونق. يرجى مراجعة المدير العام.', 'error', 'fa-user-lock');
+                        return;
                     }
 
-                    showToast('تم تسجيل الدخول بنجاح! جاري تحويلك للوحة التحكم...', 'success', 'fa-circle-check');
+                    // نجاح الدخول وحفظ بيانات الجلسة والمستخدم الحالي
+                    sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
+                    setCurrentUser(matchedUser, rememberMe);
+
+                    if (rememberMe) {
+                        localStorage.setItem(AUTH_SESSION_KEY, 'true');
+                    } else {
+                        localStorage.removeItem(AUTH_SESSION_KEY);
+                    }
+
+                    showToast(`مرحباً ${matchedUser.fullName || matchedUser.username}! (${matchedUser.roleTitle || 'صلاحية معتمدة'})`, 'success', 'fa-circle-check');
                     
                     setTimeout(() => {
                         window.location.href = 'admin.html';
@@ -330,9 +333,9 @@
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول إلى لوحة التحكم';
-                    showToast('بيانات الدخول غير صحيحة! يرجى التأكد من اسم المستخدم وكلمة المرور.', 'error', 'fa-circle-xmark');
+                    showToast('اسم المستخدم أو كلمة المرور غير صحيحة! يرجى التحقق من البيانات.', 'error', 'fa-circle-xmark');
                 }
-            }, 600);
+            }, 500);
         }
 
         function showToast(message, type = 'info', icon = 'fa-info-circle') {
