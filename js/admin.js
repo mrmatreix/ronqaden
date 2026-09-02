@@ -1,6 +1,7 @@
 /**
  * لوحة تحكم إدارة متجر رونق الفاخر - اليمن (Rawnaq Yemen Admin Dashboard Logic)
  * إدارة كاملة للمنتجات، المخططات البيانية، الطلبات، الكوبونات، تصدير CSV، والتواصل عبر واتساب
+ * ونظام متقدم لإدارة فريق العمل والمستخدمين والصلاحيات (Role-Based Access Control - RBAC)
  */
 
 const AUTH_CONFIG = {
@@ -11,19 +12,400 @@ const AUTH_CONFIG = {
 
 let currentEditingProductId = null;
 let productToDeleteId = null;
+let currentEditingUserId = null;
+let userToDeleteId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     checkAdminAuth();
     initAdminTheme();
+    enforceUserPermissions();
     loadDashboardStats();
     renderAnalyticsCharts();
     renderAdminProducts();
     renderAdminOrders();
     renderAdminCoupons();
+    renderAdminUsers();
     initAdminEventListeners();
     updateAdminNameDisplay();
     loadStoreSettingsForm();
 });
+
+// ==========================================
+// التحقق من الجلسة والأمان والصلاحيات (Auth & RBAC)
+// ==========================================
+function checkAdminAuth() {
+    const isAuth = sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true' || 
+                   localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true';
+    if (!isAuth) {
+        window.location.href = 'login.html';
+    }
+}
+
+function handleAdminLogout() {
+    if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة التحكم؟')) {
+        sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        showAdminToast('تم تسجيل الخروج بنجاح! جاري تحويلك...', 'info');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 600);
+    }
+}
+
+function enforceUserPermissions() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    // تحديث بيانات المستخدم في الهيدر
+    const topbarName = document.getElementById('topbarAdminName');
+    const topbarAvatar = document.querySelector('.admin-user-badge .admin-avatar');
+    
+    if (topbarName) {
+        topbarName.innerHTML = `${user.fullName || user.username} <span style="font-size: 0.72rem; color: var(--brand-primary); display: block; font-weight: 600;">${user.roleTitle || 'عضو معتمد'}</span>`;
+    }
+    if (topbarAvatar && user.avatar) {
+        topbarAvatar.src = user.avatar;
+    }
+
+    const perms = user.permissions || [];
+    const isSuper = user.role === 'super_admin' || perms.includes('manage_users');
+
+    // إخفاء تبويب المستخدمين إذا لم يكن لديه صلاحية
+    const navUsersTab = document.getElementById('navUsersTab');
+    if (navUsersTab) {
+        navUsersTab.style.display = isSuper ? 'flex' : 'none';
+    }
+
+    // تعطيل/إخفاء أزرار إضافة المنتجات إذا لم يكن لديه صلاحية
+    const canManageProducts = isSuper || perms.includes('manage_products');
+    document.querySelectorAll('.btn-primary[onclick*="openAddProductModal"]').forEach(btn => {
+        btn.style.display = canManageProducts ? 'inline-flex' : 'none';
+    });
+}
+
+function updateAdminNameDisplay() {
+    const user = getCurrentUser();
+    const inputUsername = document.getElementById('currentAdminUsername');
+    if (inputUsername && user) {
+        inputUsername.value = user.username;
+    }
+}
+
+function handleChangeCredentials(e) {
+    e.preventDefault();
+
+    const currentUser = getCurrentUser();
+    const enteredUsername = document.getElementById('currentAdminUsername').value.trim();
+    const enteredCurrentPass = document.getElementById('currentAdminPassword').value;
+    const newPass = document.getElementById('newAdminPassword').value;
+    const confirmNewPass = document.getElementById('confirmNewAdminPassword').value;
+
+    if (enteredCurrentPass !== currentUser.password) {
+        showAdminToast('كلمة المرور الحالية غير صحيحة!', 'error');
+        return;
+    }
+
+    if (newPass !== confirmNewPass) {
+        showAdminToast('كلمة المرور الجديدة غير متطابقة مع التأكيد!', 'error');
+        return;
+    }
+
+    if (newPass.length < 4) {
+        showAdminToast('يجب أن تتكون كلمة المرور من 4 خانات على الأقل', 'error');
+        return;
+    }
+
+    // تحديث المستخدم في قائمة المستخدمين
+    const users = getStoreUsers();
+    const idx = users.findIndex(u => u.id === currentUser.id || u.username === currentUser.username);
+    if (idx > -1) {
+        users[idx].username = enteredUsername;
+        users[idx].password = newPass;
+        saveStoreUsers(users);
+        setCurrentUser(users[idx], true);
+    }
+
+    // تحديث التوافق
+    localStorage.setItem(AUTH_CONFIG.USER_KEY, enteredUsername);
+    localStorage.setItem(AUTH_CONFIG.PASS_KEY, newPass);
+
+    updateAdminNameDisplay();
+    enforceUserPermissions();
+    document.getElementById('currentAdminPassword').value = '';
+    document.getElementById('newAdminPassword').value = '';
+    document.getElementById('confirmNewAdminPassword').value = '';
+
+    showAdminToast('تم تحديث بيانات الدخول بنجاح! يمكنك استخدامها الآن', 'success');
+}
+
+// ==========================================
+// إدارة فريق العمل والمستخدمين والصلاحيات (Users & RBAC Engine)
+// ==========================================
+function renderAdminUsers() {
+    const tableBody = document.getElementById('adminUsersTableBody');
+    const badgeEl = document.getElementById('sidebarUsersBadge');
+    if (!tableBody) return;
+
+    const users = getStoreUsers();
+    if (badgeEl) badgeEl.innerText = users.length;
+
+    const currentUser = getCurrentUser();
+
+    tableBody.innerHTML = users.map(user => {
+        const isCurrent = user.id === currentUser.id;
+        const isActive = user.status !== 'inactive';
+        
+        const permBadges = (user.permissions || []).map(p => {
+            const labels = {
+                'manage_products': 'المنتجات والمخزون',
+                'manage_orders': 'الطلبات والشحن',
+                'manage_coupons': 'الكوبونات',
+                'manage_settings': 'إعدادات المتجر',
+                'manage_users': 'إدارة الصلاحيات'
+            };
+            return `<span class="status-pill processing" style="font-size: 0.72rem; padding: 0.15rem 0.45rem; margin: 0.1rem;">${labels[p] || p}</span>`;
+        }).join(' ');
+
+        return `
+            <tr>
+                <td><strong>#${user.id}</strong></td>
+                <td>
+                    <div class="product-cell">
+                        <img src="${user.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'}" alt="${user.fullName}" class="product-thumb" style="border-radius: 50%;">
+                        <div class="product-cell-info">
+                            <h4>${user.fullName || user.username} ${isCurrent ? '<span style="color: var(--brand-primary); font-size: 0.75rem;">(أنت)</span>' : ''}</h4>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">${user.email || 'بدون بريد'}</span>
+                        </div>
+                    </div>
+                </td>
+                <td><code style="background: var(--bg-secondary); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm); color: var(--brand-primary); font-weight: 700;">${user.username}</code></td>
+                <td><span class="status-pill ${user.role === 'super_admin' ? 'pending' : 'instock'}">${user.roleTitle || user.role}</span></td>
+                <td style="max-width: 250px;">${permBadges || '<span style="color: var(--text-muted); font-size: 0.8rem;">مشاهدة فقط</span>'}</td>
+                <td>
+                    <span class="status-pill ${isActive ? 'instock' : 'outofstock'}">
+                        <i class="fa-solid ${isActive ? 'fa-circle-check' : 'fa-circle-xmark'}"></i>
+                        ${isActive ? 'نشط' : 'معطل'}
+                    </span>
+                </td>
+                <td>
+                    <div class="table-actions">
+                        <button class="tbl-btn" onclick="openEditUserModal(${user.id})" title="تعديل الصلاحيات والبيانات">
+                            <i class="fa-solid fa-user-pen"></i>
+                        </button>
+                        ${!isCurrent ? `
+                            <button class="tbl-btn" style="color: ${isActive ? '#f59e0b' : '#10b981'};" onclick="toggleUserStatus(${user.id})" title="${isActive ? 'تعطيل الحساب' : 'تفعيل الحساب'}">
+                                <i class="fa-solid ${isActive ? 'fa-user-slash' : 'fa-user-check'}"></i>
+                            </button>
+                            <button class="tbl-btn delete" onclick="confirmDeleteUser(${user.id})" title="حذف المستخدم">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function handleRolePresetChange(role) {
+    const chkProducts = document.getElementById('perm_manage_products');
+    const chkOrders = document.getElementById('perm_manage_orders');
+    const chkCoupons = document.getElementById('perm_manage_coupons');
+    const chkSettings = document.getElementById('perm_manage_settings');
+    const chkUsers = document.getElementById('perm_manage_users');
+
+    if (role === 'super_admin') {
+        if (chkProducts) chkProducts.checked = true;
+        if (chkOrders) chkOrders.checked = true;
+        if (chkCoupons) chkCoupons.checked = true;
+        if (chkSettings) chkSettings.checked = true;
+        if (chkUsers) chkUsers.checked = true;
+    } else if (role === 'orders_manager') {
+        if (chkProducts) chkProducts.checked = false;
+        if (chkOrders) chkOrders.checked = true;
+        if (chkCoupons) chkCoupons.checked = false;
+        if (chkSettings) chkSettings.checked = false;
+        if (chkUsers) chkUsers.checked = false;
+    } else if (role === 'inventory_manager') {
+        if (chkProducts) chkProducts.checked = true;
+        if (chkOrders) chkOrders.checked = false;
+        if (chkCoupons) chkCoupons.checked = true;
+        if (chkSettings) chkSettings.checked = false;
+        if (chkUsers) chkUsers.checked = false;
+    } else if (role === 'customer_support') {
+        if (chkProducts) chkProducts.checked = false;
+        if (chkOrders) chkOrders.checked = true;
+        if (chkCoupons) chkCoupons.checked = false;
+        if (chkSettings) chkSettings.checked = false;
+        if (chkUsers) chkUsers.checked = false;
+    }
+}
+
+function openAddUserModal() {
+    currentEditingUserId = null;
+    document.getElementById('userModalTitle').innerHTML = '<i class="fa-solid fa-user-plus" style="color: var(--brand-primary);"></i> إضافة عضو جديد لفريق العمل';
+    document.getElementById('userForm').reset();
+    
+    document.getElementById('userRoleSelect').value = 'orders_manager';
+    handleRolePresetChange('orders_manager');
+    document.getElementById('userStatusActive').checked = true;
+
+    document.getElementById('userModalOverlay').classList.add('active');
+}
+
+function openEditUserModal(userId) {
+    const users = getStoreUsers();
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+
+    currentEditingUserId = userId;
+    document.getElementById('userModalTitle').innerHTML = `<i class="fa-solid fa-user-pen" style="color: var(--brand-primary);"></i> تعديل صلاحيات: ${user.fullName || user.username}`;
+
+    document.getElementById('userFullName').value = user.fullName || '';
+    document.getElementById('userUsername').value = user.username || '';
+    document.getElementById('userEmail').value = user.email || '';
+    document.getElementById('userPassword').value = user.password || '';
+    document.getElementById('userRoleSelect').value = user.role || 'custom';
+    document.getElementById('userStatusActive').checked = user.status !== 'inactive';
+
+    const perms = user.permissions || [];
+    document.getElementById('perm_manage_products').checked = perms.includes('manage_products');
+    document.getElementById('perm_manage_orders').checked = perms.includes('manage_orders');
+    document.getElementById('perm_manage_coupons').checked = perms.includes('manage_coupons');
+    document.getElementById('perm_manage_settings').checked = perms.includes('manage_settings');
+    document.getElementById('perm_manage_users').checked = perms.includes('manage_users');
+
+    document.getElementById('userModalOverlay').classList.add('active');
+}
+
+function closeUserModal() {
+    currentEditingUserId = null;
+    document.getElementById('userModalOverlay').classList.remove('active');
+}
+
+function handleUserFormSubmit(e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById('userFullName').value.trim();
+    const username = document.getElementById('userUsername').value.trim();
+    const email = document.getElementById('userEmail').value.trim();
+    const password = document.getElementById('userPassword').value;
+    const role = document.getElementById('userRoleSelect').value;
+    const isActive = document.getElementById('userStatusActive').checked;
+
+    const roleTitles = {
+        'super_admin': 'المدير العام (Super Admin)',
+        'orders_manager': 'مسؤول الطلبات والشحن',
+        'inventory_manager': 'مسؤول المنتجات والمخزون',
+        'customer_support': 'خدمة العملاء',
+        'custom': 'صلاحيات مخصصة'
+    };
+
+    const permissions = [];
+    if (document.getElementById('perm_manage_products').checked) permissions.push('manage_products');
+    if (document.getElementById('perm_manage_orders').checked) permissions.push('manage_orders');
+    if (document.getElementById('perm_manage_coupons').checked) permissions.push('manage_coupons');
+    if (document.getElementById('perm_manage_settings').checked) permissions.push('manage_settings');
+    if (document.getElementById('perm_manage_users').checked) permissions.push('manage_users');
+
+    const users = getStoreUsers();
+
+    if (currentEditingUserId !== null) {
+        const index = users.findIndex(u => u.id === currentEditingUserId);
+        if (index > -1) {
+            users[index] = {
+                ...users[index],
+                fullName,
+                username,
+                email,
+                password,
+                role,
+                roleTitle: roleTitles[role] || role,
+                status: isActive ? 'active' : 'inactive',
+                permissions
+            };
+            saveStoreUsers(users);
+
+            // إذا كان المستخدم المعدل هو المستخدم المسجل حالياً
+            const currentUser = getCurrentUser();
+            if (currentUser.id === currentEditingUserId) {
+                setCurrentUser(users[index], true);
+                enforceUserPermissions();
+            }
+
+            showAdminToast(`تم تحديث بيانات وصلاحيات "${fullName}" بنجاح!`, 'success');
+        }
+    } else {
+        // التحقق من تكرار اسم المستخدم
+        if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+            showAdminToast('اسم المستخدم هذا مسجل مسبقاً! يرجى اختيار اسم مستخدم آخر.', 'error');
+            return;
+        }
+
+        const newId = users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
+        const newUser = {
+            id: newId,
+            fullName,
+            username,
+            email,
+            password,
+            role,
+            roleTitle: roleTitles[role] || role,
+            status: isActive ? 'active' : 'inactive',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
+            permissions,
+            createdAt: new Date().toISOString().substring(0, 10)
+        };
+
+        users.push(newUser);
+        saveStoreUsers(users);
+        showAdminToast(`تمت إضافة المستخدم الجديد "${fullName}" وتعيين صلاحياته بنجاح!`, 'success');
+    }
+
+    closeUserModal();
+    renderAdminUsers();
+}
+
+function toggleUserStatus(userId) {
+    const users = getStoreUsers();
+    const user = users.find(u => u.id === userId);
+    if (user) {
+        user.status = user.status === 'inactive' ? 'active' : 'inactive';
+        saveStoreUsers(users);
+        showAdminToast(`تم ${user.status === 'active' ? 'تفعيل' : 'تعطيل'} حساب المستخدم ${user.fullName || user.username}`, 'info');
+        renderAdminUsers();
+    }
+}
+
+function confirmDeleteUser(userId) {
+    userToDeleteId = userId;
+    const users = getStoreUsers();
+    const user = users.find(u => u.id === userId);
+
+    const nameEl = document.getElementById('deleteUserFullName');
+    if (nameEl && user) {
+        nameEl.innerText = `${user.fullName} (${user.username})`;
+    }
+
+    document.getElementById('deleteUserConfirmModalOverlay').classList.add('active');
+}
+
+function closeDeleteUserModal() {
+    userToDeleteId = null;
+    document.getElementById('deleteUserConfirmModalOverlay').classList.remove('active');
+}
+
+function executeDeleteUser() {
+    if (!userToDeleteId) return;
+
+    let users = getStoreUsers();
+    users = users.filter(u => u.id !== userToDeleteId);
+    saveStoreUsers(users);
+
+    closeDeleteUserModal();
+    renderAdminUsers();
+    showAdminToast('تم حذف المستخدم من فريق العمل بنجاح', 'info');
+}
 
 // ==========================================
 // إعدادات المتجر وأرقام التواصل (Store & WhatsApp Settings)
@@ -67,73 +449,6 @@ function handleSaveStoreSettings(e) {
 
     saveStoreSettings(newSettings);
     showAdminToast(`تم تحديث رقم الواتساب (${waNumber}) وبيانات التواصل بنجاح!`, 'success');
-}
-
-// ==========================================
-// التحقق من الجلسة والأمان (Auth & Security)
-// ==========================================
-function checkAdminAuth() {
-    const isAuth = sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true' || 
-                   localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true';
-    if (!isAuth) {
-        window.location.href = 'login.html';
-    }
-}
-
-function handleAdminLogout() {
-    if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة التحكم؟')) {
-        sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-        showAdminToast('تم تسجيل الخروج بنجاح! جاري تحويلك...', 'info');
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 600);
-    }
-}
-
-function updateAdminNameDisplay() {
-    const username = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
-    const topbarName = document.getElementById('topbarAdminName');
-    const inputUsername = document.getElementById('currentAdminUsername');
-    if (topbarName) topbarName.innerText = `المدير (${username})`;
-    if (inputUsername) inputUsername.value = username;
-}
-
-function handleChangeCredentials(e) {
-    e.preventDefault();
-
-    const currentUsername = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
-    const currentPassword = localStorage.getItem(AUTH_CONFIG.PASS_KEY) || 'admin123';
-
-    const enteredUsername = document.getElementById('currentAdminUsername').value.trim();
-    const enteredCurrentPass = document.getElementById('currentAdminPassword').value;
-    const newPass = document.getElementById('newAdminPassword').value;
-    const confirmNewPass = document.getElementById('confirmNewAdminPassword').value;
-
-    if (enteredCurrentPass !== currentPassword) {
-        showAdminToast('كلمة المرور الحالية غير صحيحة!', 'error');
-        return;
-    }
-
-    if (newPass !== confirmNewPass) {
-        showAdminToast('كلمة المرور الجديدة غير متطابقة مع التأكيد!', 'error');
-        return;
-    }
-
-    if (newPass.length < 4) {
-        showAdminToast('يجب أن تتكون كلمة المرور من 4 خانات على الأقل', 'error');
-        return;
-    }
-
-    localStorage.setItem(AUTH_CONFIG.USER_KEY, enteredUsername);
-    localStorage.setItem(AUTH_CONFIG.PASS_KEY, newPass);
-
-    updateAdminNameDisplay();
-    document.getElementById('currentAdminPassword').value = '';
-    document.getElementById('newAdminPassword').value = '';
-    document.getElementById('confirmNewAdminPassword').value = '';
-
-    showAdminToast('تم تحديث بيانات الدخول بنجاح! يمكنك استخدامها الآن', 'success');
 }
 
 // ==========================================
@@ -189,6 +504,10 @@ function switchTab(tabId, clickedElement) {
         if (titleEl) titleEl.innerText = 'إدارة الكوبونات والخصومات';
         if (descEl) descEl.innerText = 'إنشاء وإدارة رموز العروض الترويجية لمتجر رونق اليمن';
         renderAdminCoupons();
+    } else if (tabId === 'tab-users') {
+        if (titleEl) titleEl.innerText = 'إدارة فريق العمل والمستخدمين';
+        if (descEl) descEl.innerText = 'إضافة مستخدمين وتعديل صلاحيات الوصول والأدوار الوظيفية';
+        renderAdminUsers();
     } else if (tabId === 'tab-settings') {
         if (titleEl) titleEl.innerText = 'إعدادات المتجر والتواصل والأمان';
         if (descEl) descEl.innerText = 'تحديث رقم الواتساب لطلبات العملاء وبيانات الدخول';
@@ -269,7 +588,7 @@ function renderAnalyticsCharts() {
     const barsContainer = document.getElementById('analyticsWeeklyBars');
     if (barsContainer) {
         const days = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
-        const mockValues = [45, 70, 90, 60, 85, 100, 75]; // نسب تقديرية جذابة
+        const mockValues = [45, 70, 90, 60, 85, 100, 75];
         
         barsContainer.innerHTML = days.map((day, idx) => `
             <div class="chart-bar-item">
