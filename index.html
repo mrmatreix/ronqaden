@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر رونق اليمن | RAWNAQ YEMEN STORE - تجربة التسوق العصرية والفاخرة</title>
+    <meta name="description" content="متجر رونق الإلكتروني في اليمن - وجهتك الأولى لأرقى الإلكترونيات، العطور، الساعات الفاخرة، والأزياء الراقية بأفضل الأسعار وأسرع توصيل لكافة المحافظات اليمنية.">
+    <meta name="keywords" content="متجر رونق اليمن, تسوق أونلاين اليمن, صنعاء, عدن, حضرموت, عطور فاخرة, إلكترونيات, rawnaq yemen">
+    
+    <!-- الأيقونات والخطوط -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ملف التصميم الأساسي -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         الشريط الإعلاني العلوي (Announcement Bar)
+         ========================================== -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="announcement-text">
+                <span class="announcement-badge">عروض رونق اليمن</span>
+                <span>استخدم كود <strong>RAWNAQ10</strong> للحصول على خصم 10% إضافي وشحن مجاني!</span>
+            </div>
+            <div class="top-bar-links">
+                <span><i class="fa-solid fa-truck-fast"></i> توصيل سريع ومضمون لكافة المحافظات اليمنية</span>
+                <span><i class="fa-solid fa-shield-check"></i> منتجات أصلية 100% مع ضمان رونق الذهبي</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         الهيدر الرئيسي العصري (Main Header)
+         ========================================== -->
+    <header class="site-header">
+        <div class="container">
+            <div class="header-inner">
+                
+                <!-- شعار متجر رونق -->
+                <a href="index.html" class="logo">
+                    <div class="logo-icon">
+                        <i class="fa-solid fa-gem"></i>
+                    </div>
+                    <div class="logo-text">
+                        <span class="logo-title">رَوْنَـقْ <span>✦</span></span>
+                        <span class="logo-subtitle">RAWNAQ YEMEN</span>
+                    </div>
+                </a>
+
+                <!-- شريط البحث المباشر -->
+                <div class="search-wrapper">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="headerSearchInput" class="search-input" placeholder="ابحث في رونق اليمن عن منتج، عطر، سماعات، ساعة..." autocomplete="off">
+                        <button class="search-btn">بحث</button>
+                    </div>
+                    <div id="searchResultsDropdown" class="search-results-dropdown"></div>
+                </div>
+
+                <!-- أزرار الإجراءات السريعة -->
+                <div class="header-actions">
+                    <!-- زر الانتقال للوحة الإدارة -->
+                    <a href="admin.html" class="btn-outline" style="border-color: var(--brand-primary); color: var(--brand-primary); padding: 0.45rem 1rem; font-size: 0.85rem; background: var(--brand-primary-light); border-radius: var(--radius-full);" title="لوحة تحكم الإدارة">
+                        <i class="fa-solid fa-gauge-high"></i> لوحة الإدارة
+                    </a>
+
+                    <!-- زر تبديل الوضع الليلي -->
+                    <button class="action-btn" id="themeToggleBtn" title="تبديل المظهر">
+                        <i class="fa-solid fa-moon"></i>
+                    </button>
+
+                    <!-- زر المفضلة -->
+                    <button class="action-btn" id="wishlistBtn" onclick="showToast('يمكنك تصفح منتجاتك المفضلة المميزة بالقلب في رونق', 'info', 'fa-heart')" title="المفضلة">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="action-badge" id="wishlistBadge">0</span>
+                    </button>
+
+                    <!-- زر سلة المشتريات -->
+                    <div class="cart-btn-wrapper">
+                        <button class="action-btn" id="openCartBtn" title="سلة المشتريات">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                            <span class="action-badge" id="cartBadge">0</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- شريط التصنيفات السريعة -->
+        <nav class="nav-bar">
+            <div class="container nav-inner">
+                <ul class="nav-links">
+                    <li><a href="#catalogSection" class="nav-link active" onclick="selectCategory('all')"><i class="fa-solid fa-border-all"></i> جميع الأقسام</a></li>
+                    <li><a href="#catalogSection" class="nav-link" onclick="selectCategory('electronics')"><i class="fa-solid fa-laptop"></i> الإلكترونيات والذكاء الاصطناعي</a></li>
+                    <li><a href="#catalogSection" class="nav-link" onclick="selectCategory('perfumes')"><i class="fa-solid fa-spray-can-sparkles"></i> العطور والبخور</a></li>
+                    <li><a href="#catalogSection" class="nav-link" onclick="selectCategory('watches')"><i class="fa-solid fa-clock"></i> الساعات الفاخرة</a></li>
+                    <li><a href="#catalogSection" class="nav-link" onclick="selectCategory('fashion')"><i class="fa-solid fa-vest-patches"></i> الأزياء والجلديات</a></li>
+                    <li><a href="#catalogSection" class="nav-link" onclick="selectCategory('home')"><i class="fa-solid fa-couch"></i> المنزل والديكور</a></li>
+                    <li><a href="#flashSale" class="nav-link"><span class="hot-deal-pill">عروض حصرية %</span></a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ==========================================
+         قسم البانر الترويجي الفاخر لمتجر رونق (Hero Section)
+         ========================================== -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-card">
+                <div class="hero-content">
+                    <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> تشكيلة رونق 2026 في اليمن</span>
+                    <h1 class="hero-title">عالم من <span>الرونق والفخامة</span> يصل إلى باب منزلك</h1>
+                    <p class="hero-desc">اكتشف أرقى المنتجات العالمية الأصلية مع خدمة توصيل سريعة وموثوقة لجميع المحافظات (صنعاء، عدن، حضرموت، تعز، والمزيد) وخيارات دفع مريحة.</p>
+                    
+                    <div class="hero-actions">
+                        <a href="#catalogSection" class="btn-primary">
+                            <i class="fa-solid fa-cart-shopping"></i> تسوق في رونق الآن
+                        </a>
+                        <a href="#flashSale" class="btn-outline">
+                            <i class="fa-solid fa-bolt"></i> عروض اليوم الخاطفة
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-image-box">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=80" alt="سماعات Rawnaq Pro Max" class="hero-product-img">
+                    <div class="hero-floating-badge">
+                        <i class="fa-solid fa-fire" style="color: #f43f5e; font-size: 1.35rem;"></i>
+                        <div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">الأكثر طلباً في اليمن</div>
+                            <div class="price-tag">85,000 ر.ي <span style="font-size: 0.8rem; text-decoration: line-through; color: #94a3b8;">110,000 ر.ي</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         شريط مميزات وثقة المتجر (Trust Features)
+         ========================================== -->
+    <section class="trust-features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>شحن لكافة المحافظات</h4>
+                        <p>شحن مجاني للطلبات فوق 100,000 ر.ي</p>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>دفع إلكتروني ومحلي سهل</h4>
+                        <p>الكريمي، ون كاش، فلوسك، وكاش عند الاستلام</p>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>ضمان فحص واسترجاع</h4>
+                        <p>ضمان استبدال خلال 14 يوم</p>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-icon-wrapper">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <div class="feature-info">
+                        <h4>دعم عملاء رونق اليمن</h4>
+                        <p>خدمة واتساب واتصال على مدار 24 ساعة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         قسم شريط التصنيفات (Categories Bar)
+         ========================================== -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">أقسام متجر رونق</h2>
+                    <p class="section-subtitle">اختر القسم المفضل لديك لاستعراض أحدث المقتنيات</p>
+                </div>
+            </div>
+            <div class="categories-nav" id="categoriesNav">
+                <!-- يتم توليدها تلقائياً عبر JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         بانر العروض الخاطفة والعداد التنازلي (Flash Sale)
+         ========================================== -->
+    <section class="flash-sale-section" id="flashSale">
+        <div class="container">
+            <div class="flash-sale-banner">
+                <div class="flash-left">
+                    <i class="fa-solid fa-bolt-lightning flash-icon"></i>
+                    <div class="flash-text">
+                        <h3>عروض فلاش رونق اليمن الحصرية - خصومات تصل حتى 30%!</h3>
+                        <p>سارع بالاستفادة من الخصومات قبل نفاد الكميات المخصصة لهذا الأسبوع</p>
+                    </div>
+                </div>
+
+                <div class="countdown-box">
+                    <div class="time-card">
+                        <span class="time-num" id="flashHours">14</span>
+                        <span class="time-label">ساعة</span>
+                    </div>
+                    <span class="time-colon">:</span>
+                    <div class="time-card">
+                        <span class="time-num" id="flashMinutes">45</span>
+                        <span class="time-label">دقيقة</span>
+                    </div>
+                    <span class="time-colon">:</span>
+                    <div class="time-card">
+                        <span class="time-num" id="flashSeconds">20</span>
+                        <span class="time-label">ثانية</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         دليل المنتجات والتصفية (Main Catalog)
+         ========================================== -->
+    <section class="catalog-section" id="catalogSection">
+        <div class="container">
+            
+            <div class="catalog-layout">
+                
+                <!-- الفلتر الجانبي (Filters Sidebar) -->
+                <aside class="filter-sidebar">
+                    <div class="filter-header">
+                        <h3><i class="fa-solid fa-sliders"></i> تصفية المنتجات</h3>
+                        <button class="reset-filters-btn" onclick="resetAllFilters()">إعادة ضبط</button>
+                    </div>
+
+                    <!-- فلتر الأقسام -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">الأقسام</h4>
+                        <ul class="filter-list">
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="all" checked>
+                                    <span>جميع الأقسام</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="electronics">
+                                    <span>إلكترونيات وذكاء اصطناعي</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="perfumes">
+                                    <span>عطور وبخور فاخر</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="watches">
+                                    <span>ساعات ومجوهرات</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="fashion">
+                                    <span>أزياء واكسسوارات</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="filter-radio-label">
+                                    <input type="radio" name="categoryFilter" value="home">
+                                    <span>ديكور ومقتنيات منزلية</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- فلتر نطاق السعر -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">أقصى ميزانية</h4>
+                        <input type="range" id="priceRange" class="price-range-slider" min="20000" max="400000" step="10000" value="400000">
+                        <div class="price-values">
+                            <span>20,000 ر.ي</span>
+                            <span id="maxPriceDisplay" style="color: var(--brand-primary); font-weight: 800;">400,000 ر.ي</span>
+                        </div>
+                    </div>
+
+                    <!-- فلتر التوفر -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">حالة التوفر</h4>
+                        <label class="filter-checkbox-label">
+                            <input type="checkbox" id="inStockOnly">
+                            <span>المنتجات المتوفرة فقط بالمخزون</span>
+                        </label>
+                    </div>
+
+                </aside>
+
+                <!-- شبكة المنتجات وأدوات التحكم -->
+                <main class="catalog-main">
+                    
+                    <!-- شريط تحكم الفرز والعدد -->
+                    <div class="catalog-controls">
+                        <div class="product-count" id="productCount">
+                            عرض <strong>0</strong> منتج
+                        </div>
+
+                        <div class="sort-wrapper">
+                            <label for="sortSelect">ترتيب حسب:</label>
+                            <select id="sortSelect" class="sort-select">
+                                <option value="featured">المميزة والأكثر مبيعاً</option>
+                                <option value="price-asc">السعر: من الأقل للأعلى</option>
+                                <option value="price-desc">السعر: من الأعلى للأقل</option>
+                                <option value="rating">الأعلى تقييماً</option>
+                                <option value="discount">أعلى نسبة خصم</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- شبكة المنتجات -->
+                    <div class="products-grid" id="productsGrid">
+                        <!-- يتم حقن بطاقات المنتجات ديناميكياً هنا -->
+                    </div>
+
+                </main>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==========================================
+         قسم آراء وتقييمات العملاء (Testimonials)
+         ========================================== -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 2.5rem;">
+                <div>
+                    <h2 class="section-title" style="display: inline-block;">آراء وتجارب عملاء متجر رونق في اليمن</h2>
+                    <p class="section-subtitle">آلاف العملاء يثقون في جودة منتجاتنا وخدمة الشحن السريع</p>
+                </div>
+            </div>
+
+            <div class="reviews-grid">
+                <div class="review-card">
+                    <div class="reviewer-profile">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="طارق الأهدل" class="reviewer-avatar">
+                        <div>
+                            <div class="reviewer-name">طارق الأهدل</div>
+                            <div class="reviewer-city">صنعاء - عميل معتمد</div>
+                        </div>
+                    </div>
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"تجربة تسوق ممتازة جداً! طلبت السماعات ووصلتني في صنعاء بنفس اليوم والتغليف راقي والمنتج أصلي 100%. والدفع عبر الكريمي كان سهل وسريع."</p>
+                </div>
+
+                <div class="review-card">
+                    <div class="reviewer-profile">
+                        <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" alt="أروى باوزير" class="reviewer-avatar">
+                        <div>
+                            <div class="reviewer-name">أروى باوزير</div>
+                            <div class="reviewer-city">المكلا - حضرموت - عميل VIP</div>
+                        </div>
+                    </div>
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"عطر رونق العود الملكي أسطوري وفواح جداً، وصلني للمكلا خلال 24 ساعة فقط. متجر يمني راقي يرفع الرأس بخدمته وجودته."</p>
+                </div>
+
+                <div class="review-card">
+                    <div class="reviewer-profile">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="ياسر اليافعي" class="reviewer-avatar">
+                        <div>
+                            <div class="reviewer-name">ياسر اليافعي</div>
+                            <div class="reviewer-city">عدن - عميل معتمد</div>
+                        </div>
+                    </div>
+                    <div class="stars">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="review-text">"ساعة اليد فخمة جداً، خدمة العملاء في الواتساب تجاوبوا معي بسرعة ونسقوا التوصيل لباب بيتي في المعلا - عدن والدفع كاش عند الاستلام."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         قسم النشرة البريدية ونادي VIP
+         ========================================== -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-box">
+                <span class="hero-badge" style="background: rgba(255, 255, 255, 0.12); border-color: rgba(255,255,255,0.25);"><i class="fa-solid fa-crown"></i> انضم لنادي رونق اليمن VIP</span>
+                <h2>احصل على قسيمة شراء بقيمة 5,000 ريال يمني</h2>
+                <p>اشترك في نشرتنا البريدية لتصلك أحدث تشكيلات وعروض رونق الحصرية في اليمن قبل الجميع.</p>
+                
+                <form id="newsletterForm" class="newsletter-form">
+                    <input type="email" id="newsletterEmail" class="newsletter-input" placeholder="أدخل بريدك الإلكتروني هنا..." required>
+                    <button type="submit" class="btn-primary">اشتراك الآن</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
+         الفوتر الاحترافي (Footer)
+         ========================================== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                
+                <!-- نبذة عن المتجر -->
+                <div class="footer-col">
+                    <a href="index.html" class="logo" style="margin-bottom: 1rem;">
+                        <div class="logo-icon">
+                            <i class="fa-solid fa-gem"></i>
+                        </div>
+                        <div class="logo-text">
+                            <span class="logo-title">رَوْنَـقْ <span>✦</span></span>
+                            <span class="logo-subtitle">RAWNAQ YEMEN</span>
+                        </div>
+                    </a>
+                    <p class="footer-desc">متجر رونق هو وجهتك الأولى في الجمهورية اليمنية لاقتناء أرقى المنتجات العالمية والمحلية الفاخرة بأعلى معايير الجودة وخدمة التوصيل السريع لكافة المحافظات.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-telegram"></i></a>
+                    </div>
+                </div>
+
+                <!-- روابط سريعة -->
+                <div class="footer-col">
+                    <h4>روابط هامة</h4>
+                    <ul class="footer-links">
+                        <li><a href="#catalogSection">جميع المنتجات</a></li>
+                        <li><a href="#flashSale">العروض الخاصة</a></li>
+                        <li><a href="#">سياسة الخصوصية والشحن</a></li>
+                        <li><a href="#">الشروط والأحكام</a></li>
+                        <li><a href="#">سياسة الاستبدال والاسترجاع</a></li>
+                    </ul>
+                </div>
+
+                <!-- خدمة العملاء -->
+                <div class="footer-col">
+                    <h4>خدمة العملاء في اليمن</h4>
+                    <ul class="footer-links">
+                        <li><a href="tel:+967777123456" style="direction: ltr; text-align: right;"><i class="fa-solid fa-phone" style="font-size: 0.8rem; margin-left: 0.4rem;"></i> +967 777 123 456</a></li>
+                        <li><a href="tel:+9671445566" style="direction: ltr; text-align: right;"><i class="fa-solid fa-phone-volume" style="font-size: 0.8rem; margin-left: 0.4rem;"></i> +967 1 445566</a></li>
+                        <li><a href="mailto:support@rawnaq-ye.com"><i class="fa-solid fa-envelope" style="font-size: 0.8rem; margin-left: 0.4rem;"></i> support@rawnaq-ye.com</a></li>
+                        <li><a href="#"><i class="fa-solid fa-location-dot" style="font-size: 0.8rem; margin-left: 0.4rem;"></i> صنعاء / عدن، الجمهورية اليمنية</a></li>
+                    </ul>
+                </div>
+
+                <!-- طرق الدفع المعتمدة في اليمن -->
+                <div class="footer-col">
+                    <h4>طرق دفع محلية وإلكترونية</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem;">نوفر لك كافة خيارات الدفع المحلية المعتمدة في اليمن لراحتك وأمان تعاملاتك.</p>
+                    <div class="payment-badges">
+                        <span class="pay-badge"><i class="fa-solid fa-money-bill-wave" style="color: var(--brand-secondary);"></i> كاش عند الاستلام</span>
+                        <span class="pay-badge"><i class="fa-solid fa-money-bill-transfer" style="color: var(--brand-primary);"></i> حوالة الشبكة الموحدة فقط (UNS)</span>
+                        <span class="pay-badge">الكريمي (حاسب / إم فلوس)</span>
+                        <span class="pay-badge">ون كاش OneCash</span>
+                        <span class="pay-badge">محفظة فلوسك</span>
+                        <span class="pay-badge">محفظة جوالي</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <div>جميع الحقوق محفوظة © 2026 <strong>متجر رونق اليمن | Rawnaq Yemen Store</strong></div>
+                <div>خدمة توصيل موثوقة في كافة المحافظات اليمنية - مسجل ومرخص محلياً</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         سلة المشتريات الجانبية (Cart Drawer)
+         ========================================== -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-drawer-header">
+            <h3><i class="fa-solid fa-bag-shopping" style="color: var(--brand-primary);"></i> سلة المشتريات - رونق اليمن</h3>
+            <button class="close-drawer-btn" id="closeCartBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- شريط الشحن المجاني التفاعلي -->
+        <div class="free-shipping-bar">
+            <div class="shipping-progress-text" id="shippingProgressText">
+                <i class="fa-solid fa-truck-fast"></i> أضف بقيمة <strong>100,000 ر.ي</strong> للحصول على شحن مجاني
+            </div>
+            <div class="shipping-progress-track">
+                <div class="shipping-progress-fill" id="shippingProgressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- قائمة عناصر السلة -->
+        <div class="cart-items-container" id="cartItemsContainer">
+            <!-- يتم حقن عناصر السلة عبر JavaScript -->
+        </div>
+
+        <!-- الفوتر وحساب الإجمالي والقسائم -->
+        <div class="cart-drawer-footer">
+            <div class="coupon-section">
+                <input type="text" id="couponInput" class="coupon-input" placeholder="رمز الكوبون (مثال: RAWNAQ10)">
+                <button class="apply-coupon-btn" onclick="applyCouponCode()">تطبيق</button>
+            </div>
+
+            <div class="cart-summary-row">
+                <span>المجموع الفرعي:</span>
+                <strong id="cartSubtotal">0 ر.ي</strong>
+            </div>
+
+            <div class="cart-summary-row" id="cartDiscountRow" style="display: none; color: var(--brand-secondary);">
+                <span>خصم الكوبون:</span>
+                <strong id="cartDiscount">0 ر.ي</strong>
+            </div>
+
+            <div class="cart-summary-row total">
+                <span>الإجمالي النهائي:</span>
+                <strong class="total-amount" id="cartTotal">0 ر.ي</strong>
+            </div>
+
+            <button class="btn-primary checkout-btn" onclick="openCheckoutModal()">
+                <i class="fa-solid fa-lock"></i> إتمام الطلب في اليمن
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة العرض السريع (Quick View Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="quickViewOverlay" onclick="if(event.target === this) closeQuickView()">
+        <div class="quickview-modal" id="quickViewModal">
+            <button class="modal-close-btn" onclick="closeQuickView()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="quickViewContent">
+                <!-- يتم حقن التفاصيل ديناميكياً -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة إتمام الطلب (Checkout Modal - Yemen)
+         ========================================== -->
+    <div class="modal-overlay" id="checkoutOverlay" onclick="if(event.target === this) closeCheckoutModal()">
+        <div class="checkout-modal">
+            <button class="modal-close-btn" onclick="closeCheckoutModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-shield-check" style="color: var(--brand-primary);"></i> إتمام الطلب والشحن في اليمن
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">يرجى إدخال بيانات التوصيل ورقم هاتفك اليمني للتواصل وتأكيد الشحن.</p>
+
+            <div class="checkout-grid">
+                
+                <!-- نموذج بيانات العميل -->
+                <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label" for="customerName">الاسم بالكامل *</label>
+                        <input type="text" id="customerName" class="form-input" placeholder="مثال: طارق الأهدل" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerPhone">رقم الهاتف / الجوال اليمني (يمن موبايل / يو / سبأفون / واي) *</label>
+                        <input type="tel" id="customerPhone" class="form-input" placeholder="مثال: 771234567 أو 731234567" style="direction: ltr; text-align: right;" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerCity">المحافظة / المدينة *</label>
+                        <select id="customerCity" class="form-input" required>
+                            <option value="">اختر المحافظة / المدينة</option>
+                            <option value="sanaa">صنعاء (أمانة العاصمة)</option>
+                            <option value="aden">عدن</option>
+                            <option value="taiz">تعز</option>
+                            <option value="mukalla">المكلا - حضرموت</option>
+                            <option value="seiyun">سيئون - وادي حضرموت</option>
+                            <option value="ibb">إب</option>
+                            <option value="hodeidah">الحديدة</option>
+                            <option value="dhamar">ذمار</option>
+                            <option value="marib">مأرب</option>
+                            <option value="shabwah">شبوة (عتق)</option>
+                            <option value="lahj">لحج وأبين</option>
+                            <option value="other">محافظة أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="customerAddress">العنوان بالتفصيل (المديرية، الحي، الشارع، أقرب معلم)</label>
+                        <input type="text" id="customerAddress" class="form-input" placeholder="مثال: حدة، شارع الأربعين، جوار فندق..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">اختر وسيلة الدفع المناسبة لك</label>
+                        <div class="payment-methods-grid">
+                            <label class="payment-method-card active">
+                                <input type="radio" name="paymentMethod" value="cod" checked style="accent-color: var(--brand-primary);">
+                                <span><i class="fa-solid fa-hand-holding-dollar" style="color: var(--brand-secondary);"></i> الدفع كاش عند الاستلام (يد بيد)</span>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="paymentMethod" value="unified_network" style="accent-color: var(--brand-primary);">
+                                <span><i class="fa-solid fa-money-bill-transfer" style="color: var(--brand-primary);"></i> حوالة عبر الشبكة الموحدة فقط (UNS)</span>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="paymentMethod" value="kuraimi" style="accent-color: var(--brand-primary);">
+                                <span><i class="fa-solid fa-building-columns"></i> بنك الكريمي (حاسب / إم فلوس MFloos)</span>
+                            </label>
+                            <label class="payment-method-card">
+                                <input type="radio" name="paymentMethod" value="wallets" style="accent-color: var(--brand-primary);">
+                                <span><i class="fa-solid fa-mobile-screen-button"></i> المحافظ الإلكترونية (ون كاش / فلوسك / جوالي)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; padding: 0.95rem;">
+                        <i class="fa-solid fa-check"></i> تأكيد الطلب الآن
+                    </button>
+                </form>
+
+                <!-- ملخص الطلب -->
+                <div style="background-color: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-color); height: fit-content;">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">ملخص الطلب</h3>
+                    
+                    <div id="checkoutSummaryItems" style="max-height: 180px; overflow-y: auto; margin-bottom: 1rem;">
+                        <!-- يتم حقن عناصر الملخص -->
+                    </div>
+
+                    <!-- خانة كود الخصم في نافذة إتمام الطلب -->
+                    <div class="form-group" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                        <label class="form-label" for="checkoutCouponInput" style="font-size: 0.8rem;">هل لديك كود خصم أو قسيمة؟</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="checkoutCouponInput" class="form-input" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; text-transform: uppercase;" placeholder="رمز الكوبون (مثال: RAWNAQ10)">
+                            <button type="button" class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem; border-radius: var(--radius-md); white-space: nowrap;" onclick="applyCheckoutCouponCode()">تطبيق</button>
+                        </div>
+                        <div id="checkoutCouponMsg" style="font-size: 0.75rem; margin-top: 0.35rem; display: none;"></div>
+                    </div>
+
+                    <div class="cart-summary-row">
+                        <span>المجموع الفرعي:</span>
+                        <strong id="checkoutSubtotal">0 ر.ي</strong>
+                    </div>
+
+                    <div class="cart-summary-row" id="checkoutDiscountRow" style="display: none; color: var(--brand-secondary);">
+                        <span>خصم الكوبون:</span>
+                        <strong id="checkoutDiscount">0 ر.ي</strong>
+                    </div>
+
+                    <div class="cart-summary-row">
+                        <span>قيمة الشحن:</span>
+                        <strong style="color: var(--brand-secondary);">مجاني</strong>
+                    </div>
+
+                    <div class="cart-summary-row total">
+                        <span>الإجمالي المطلوب:</span>
+                        <strong class="total-amount" id="checkoutTotal">0 ر.ي</strong>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة نجاح الطلب (Order Success Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="orderSuccessOverlay">
+        <div class="checkout-modal" style="max-width: 500px; text-align: center;">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            
+            <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem;">تم استلام طلبك بنجاح!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">شكرًا لطلبك من متجر رونق اليمن. سيتواصل معك مندوبنا عبر الهاتف أو الواتساب لتأكيد موعد التسليم.</p>
+            
+            <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">رقم الطلب الخاص بك:</span>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);" id="confirmedOrderId">RNQ-YE-89241</div>
+            </div>
+
+            <button class="btn-primary" style="width: 100%;" onclick="closeSuccessModal()">
+                متابعة التسوق في رونق اليمن
+            </button>
+        </div>
+    </div>
+
+    <!-- حاوية الإشعارات المنبثقة -->
+    <div class="toast-container"></div>
+
+    <!-- ملفات الجافاسكريبت -->
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
