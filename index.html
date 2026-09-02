@@ -25,7 +25,7 @@
                 <span>استخدم كود <strong>RAWNAQ10</strong> للحصول على خصم 10% إضافي وشحن مجاني!</span>
             </div>
             <div class="top-bar-links">
-                <span><i class="fa-solid fa-truck-fast"></i> توصيل سريع ومضمون لكافة المحافظات اليمنية</span>
+                <a href="#orderTrackingSection" style="color: #cbd5e1;"><i class="fa-solid fa-truck-fast"></i> تتبع شحنتك برقم الطلب</a>
                 <span><i class="fa-solid fa-shield-check"></i> منتجات أصلية 100% مع ضمان رونق الذهبي</span>
             </div>
         </div>
@@ -64,6 +64,11 @@
                     <!-- زر الانتقال للوحة الإدارة -->
                     <a href="admin.html" class="btn-outline" style="border-color: var(--brand-primary); color: var(--brand-primary); padding: 0.45rem 1rem; font-size: 0.85rem; background: var(--brand-primary-light); border-radius: var(--radius-full);" title="لوحة تحكم الإدارة">
                         <i class="fa-solid fa-gauge-high"></i> لوحة الإدارة
+                    </a>
+
+                    <!-- زر تتبع الطلب السريع -->
+                    <a href="#orderTrackingSection" class="action-btn" title="تتبع طلبي">
+                        <i class="fa-solid fa-location-crosshairs"></i>
                     </a>
 
                     <!-- زر تبديل الوضع الليلي -->
@@ -114,14 +119,14 @@
                 <div class="hero-content">
                     <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> تشكيلة رونق 2026 في اليمن</span>
                     <h1 class="hero-title">عالم من <span>الرونق والفخامة</span> يصل إلى باب منزلك</h1>
-                    <p class="hero-desc">اكتشف أرقى المنتجات العالمية الأصلية مع خدمة توصيل سريعة وموثوقة لجميع المحافظات (صنعاء، عدن، حضرموت، تعز، والمزيد) وخيارات دفع مريحة.</p>
+                    <p class="hero-desc">اكتشف أرقى المنتجات العالمية الأصلية مع خدمة توصيل سريعة وموثوقة لجميع المحافظات (صنعاء، عدن، حضرموت، تعز، والمزيد) وخيارات دفع مريحة تشمل حوالة الشبكة الموحدة والكريمي.</p>
                     
                     <div class="hero-actions">
                         <a href="#catalogSection" class="btn-primary">
                             <i class="fa-solid fa-cart-shopping"></i> تسوق في رونق الآن
                         </a>
-                        <a href="#flashSale" class="btn-outline">
-                            <i class="fa-solid fa-bolt"></i> عروض اليوم الخاطفة
+                        <a href="https://wa.me/967777123456?text=مرحباً%20متجر%20رونق%20اليمن%20أود%20الاستفسار%20عن%20المنتجات%20المتوفرة" target="_blank" class="btn-whatsapp-direct" style="padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: var(--radius-full);">
+                            <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> اطلب مباشرة بالواتساب
                         </a>
                     </div>
                 </div>
@@ -132,7 +137,7 @@
                         <i class="fa-solid fa-fire" style="color: #f43f5e; font-size: 1.35rem;"></i>
                         <div>
                             <div style="font-size: 0.8rem; color: #94a3b8;">الأكثر طلباً في اليمن</div>
-                            <div class="price-tag">85,000 ر.ي <span style="font-size: 0.8rem; text-decoration: line-through; color: #94a3b8;">110,000 ر.ي</span></div>
+                            <div class="price-tag" style="font-size: 1.1rem; font-weight: 800; color: #fff;">85,000 ر.ي <span style="font-size: 0.8rem; text-decoration: line-through; color: #94a3b8;">110,000 ر.ي</span></div>
                         </div>
                     </div>
                 </div>
@@ -158,11 +163,11 @@
 
                 <div class="feature-box">
                     <div class="feature-icon-wrapper">
-                        <i class="fa-solid fa-wallet"></i>
+                        <i class="fa-solid fa-money-bill-transfer"></i>
                     </div>
                     <div class="feature-info">
-                        <h4>دفع إلكتروني ومحلي سهل</h4>
-                        <p>الكريمي، ون كاش، فلوسك، وكاش عند الاستلام</p>
+                        <h4>حوالة الشبكة الموحدة (UNS)</h4>
+                        <p>تحويل فوري وآمن مع توثيق السند</p>
                     </div>
                 </div>
 
@@ -171,7 +176,7 @@
                         <i class="fa-solid fa-rotate-left"></i>
                     </div>
                     <div class="feature-info">
-                        <h4>ضمان فحص واسترجاع</h4>
+                        <h4>ضمان فحص واستبدال</h4>
                         <p>ضمان استبدال خلال 14 يوم</p>
                     </div>
                 </div>
@@ -353,6 +358,34 @@
     </section>
 
     <!-- ==========================================
+         قسم تتبع الشحنات والطلبات التفاعلي (Order Tracking Section)
+         ========================================== -->
+    <section class="order-tracking-section" id="orderTrackingSection">
+        <div class="container">
+            <div class="tracking-card">
+                <div style="text-align: center;">
+                    <span class="hero-badge" style="background: var(--brand-primary-light); color: var(--brand-primary); border-color: rgba(99,102,241,0.25);">
+                        <i class="fa-solid fa-location-dot"></i> نظام التتبع المباشر
+                    </span>
+                    <h2 style="font-size: 1.8rem; margin-top: 0.5rem;">تتبع مسار شحنتك وطلبك في اليمن</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem;">أدخل رقم الطلب الخاص بك لمعرفة حالته وموعد وصول المندوب</p>
+                </div>
+
+                <form id="orderTrackingForm" class="tracking-search-bar">
+                    <input type="text" id="trackingOrderInput" class="tracking-input" placeholder="أدخل رقم الطلب (مثال: RNQ-YE-781924)" required>
+                    <button type="submit" class="btn-primary" style="padding: 0.75rem 1.75rem;">
+                        <i class="fa-solid fa-magnifying-glass"></i> تتبع الآن
+                    </button>
+                </form>
+
+                <div id="trackingResultBox" style="display: none;">
+                    <!-- يتم حقن نتائج التتبع ديناميكياً -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================
          قسم آراء وتقييمات العملاء (Testimonials)
          ========================================== -->
     <section class="testimonials-section">
@@ -360,7 +393,7 @@
             <div class="section-header" style="justify-content: center; text-align: center; margin-bottom: 2.5rem;">
                 <div>
                     <h2 class="section-title" style="display: inline-block;">آراء وتجارب عملاء متجر رونق في اليمن</h2>
-                    <p class="section-subtitle">آلاف العملاء يثقون في جودة منتجاتنا وخدمة الشحن السريع</p>
+                    <p class="section-subtitle">آلاف العملاء يثقون في جودة منتجاتنا وخدمة الشحن السريع وحوالات الشبكة الموحدة</p>
                 </div>
             </div>
 
@@ -376,7 +409,7 @@
                     <div class="stars">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
-                    <p class="review-text">"تجربة تسوق ممتازة جداً! طلبت السماعات ووصلتني في صنعاء بنفس اليوم والتغليف راقي والمنتج أصلي 100%. والدفع عبر الكريمي كان سهل وسريع."</p>
+                    <p class="review-text">"تجربة تسوق ممتازة جداً! طلبت السماعات ووصلتني في صنعاء بنفس اليوم والتغليف راقي والمنتج أصلي 100%. والدفع عبر حوالة الشبكة الموحدة كان موثقاً وسريعاً."</p>
                 </div>
 
                 <div class="review-card">
@@ -390,7 +423,7 @@
                     <div class="stars">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
-                    <p class="review-text">"عطر رونق العود الملكي أسطوري وفواح جداً، وصلني للمكلا خلال 24 ساعة فقط. متجر يمني راقي يرفع الرأس بخدمته وجودته."</p>
+                    <p class="review-text">"عطر رونق العود الملكي أسطوري وفواح جداً، وصلني للمكلا خلال 24 ساعة فقط وطبعت فاتورة الشراء وسند الاستلام مباشرة من الموقع."</p>
                 </div>
 
                 <div class="review-card">
@@ -404,7 +437,7 @@
                     <div class="stars">
                         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     </div>
-                    <p class="review-text">"ساعة اليد فخمة جداً، خدمة العملاء في الواتساب تجاوبوا معي بسرعة ونسقوا التوصيل لباب بيتي في المعلا - عدن والدفع كاش عند الاستلام."</p>
+                    <p class="review-text">"ساعة اليد فخمة جداً، خدمة العملاء في الواتساب تجاوبوا معي فورياً بنقرة زر ونسقوا التوصيل لباب بيتي في المعلا - عدن."</p>
                 </div>
             </div>
         </div>
@@ -448,7 +481,7 @@
                     </a>
                     <p class="footer-desc">متجر رونق هو وجهتك الأولى في الجمهورية اليمنية لاقتناء أرقى المنتجات العالمية والمحلية الفاخرة بأعلى معايير الجودة وخدمة التوصيل السريع لكافة المحافظات.</p>
                     <div class="social-links">
-                        <a href="#" class="social-icon"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="https://wa.me/967777123456" target="_blank" class="social-icon" title="واتساب"><i class="fa-brands fa-whatsapp"></i></a>
                         <a href="#" class="social-icon"><i class="fa-brands fa-facebook"></i></a>
                         <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
                         <a href="#" class="social-icon"><i class="fa-brands fa-telegram"></i></a>
@@ -460,10 +493,10 @@
                     <h4>روابط هامة</h4>
                     <ul class="footer-links">
                         <li><a href="#catalogSection">جميع المنتجات</a></li>
+                        <li><a href="#orderTrackingSection">تتبع الشحنات والطلبات</a></li>
                         <li><a href="#flashSale">العروض الخاصة</a></li>
                         <li><a href="#">سياسة الخصوصية والشحن</a></li>
                         <li><a href="#">الشروط والأحكام</a></li>
-                        <li><a href="#">سياسة الاستبدال والاسترجاع</a></li>
                     </ul>
                 </div>
 
@@ -500,6 +533,14 @@
             </div>
         </div>
     </footer>
+
+    <!-- ==========================================
+         زر الواتساب العائم للتواصل الفوري (Floating WhatsApp)
+         ========================================== -->
+    <a href="https://wa.me/967777123456?text=مرحباً%20متجر%20رونق%20اليمن%20أود%20الاستفسار%20عن%20الطلب" target="_blank" class="floating-whatsapp-btn" title="تواصل معنا عبر واتساب">
+        <div class="whatsapp-pulse"></div>
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
 
     <!-- ==========================================
          سلة المشتريات الجانبية (Cart Drawer)
@@ -550,9 +591,14 @@
                 <strong class="total-amount" id="cartTotal">0 ر.ي</strong>
             </div>
 
-            <button class="btn-primary checkout-btn" onclick="openCheckoutModal()">
-                <i class="fa-solid fa-lock"></i> إتمام الطلب في اليمن
-            </button>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <button class="btn-primary checkout-btn" onclick="openCheckoutModal()">
+                    <i class="fa-solid fa-lock"></i> إتمام الطلب في اليمن
+                </button>
+                <button class="btn-whatsapp-direct" style="width: 100%; padding: 0.75rem;" onclick="sendCartViaWhatsApp()">
+                    <i class="fa-brands fa-whatsapp" style="font-size: 1.15rem;"></i> إرسال السلة وطلبها عبر واتساب
+                </button>
+            </div>
         </div>
     </div>
 
@@ -602,10 +648,10 @@
                         <label class="form-label" for="customerCity">المحافظة / المدينة *</label>
                         <select id="customerCity" class="form-input" required>
                             <option value="">اختر المحافظة / المدينة</option>
-                            <option value="sanaa">صنعاء (أمانة العاصمة)</option>
-                            <option value="aden">عدن</option>
-                            <option value="taiz">تعز</option>
-                            <option value="mukalla">المكلا - حضرموت</option>
+                            <option value="sanaa">صنعاء (أمانة العاصمة - توصيل خلال 24 ساعة)</option>
+                            <option value="aden">عدن (توصيل فوري)</option>
+                            <option value="taiz">تعز (شحن سريع 24-48 ساعة)</option>
+                            <option value="mukalla">المكلا - حضرموت (شحن سريع)</option>
                             <option value="seiyun">سيئون - وادي حضرموت</option>
                             <option value="ibb">إب</option>
                             <option value="hodeidah">الحديدة</option>
@@ -618,7 +664,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="customerAddress">العنوان بالتفصيل (المديرية، الحي، الشارع، أقرب معلم)</label>
+                        <label class="form-label" for="customerAddress">العنوان بالتفصيل (المديرية، الحي، الشارع، أقرب معلم) *</label>
                         <input type="text" id="customerAddress" class="form-input" placeholder="مثال: حدة، شارع الأربعين، جوار فندق..." required>
                     </div>
 
@@ -641,6 +687,20 @@
                                 <input type="radio" name="paymentMethod" value="wallets" style="accent-color: var(--brand-primary);">
                                 <span><i class="fa-solid fa-mobile-screen-button"></i> المحافظ الإلكترونية (ون كاش / فلوسك / جوالي)</span>
                             </label>
+                        </div>
+
+                        <!-- صندوق إرشادات حوالة الشبكة الموحدة -->
+                        <div id="unsInstructionsBox" class="uns-instructions-box" style="display: none;">
+                            <h5><i class="fa-solid fa-circle-info"></i> بيانات التحويل الرسمية عبر الشبكة الموحدة (UNS):</h5>
+                            <div style="margin-top: 0.3rem;">
+                                <div>اسم المستلم: <strong>متجر رونق اليمن المعتمد</strong></div>
+                                <div>رقم الهاتف المعتمد: <strong>777123456</strong></div>
+                                <div>رقم حساب المحفظة / التاجر: <strong>55443322</strong></div>
+                            </div>
+                            <div style="margin-top: 0.75rem;">
+                                <label class="form-label" style="font-size: 0.8rem; margin-bottom: 0.2rem;" for="unsVoucherNumber">رقم سند / إشعار الحوالة (اختياري لسرعة المطابقة):</label>
+                                <input type="text" id="unsVoucherNumber" class="form-input" style="padding: 0.45rem 0.75rem; font-size: 0.85rem;" placeholder="أدخل رقم السند أو الحوالة إن وُجد">
+                            </div>
                         </div>
                     </div>
 
@@ -697,21 +757,40 @@
          ========================================== -->
     <div class="modal-overlay" id="orderSuccessOverlay">
         <div class="checkout-modal" style="max-width: 500px; text-align: center;">
-            <div class="success-icon">
+            <div class="success-icon" style="width: 65px; height: 65px; background: var(--brand-success); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1rem;">
                 <i class="fa-solid fa-check"></i>
             </div>
             
             <h2 style="font-size: 1.6rem; margin-bottom: 0.5rem;">تم استلام طلبك بنجاح!</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">شكرًا لطلبك من متجر رونق اليمن. سيتواصل معك مندوبنا عبر الهاتف أو الواتساب لتأكيد موعد التسليم.</p>
+            <p style="color: var(--text-secondary); margin-bottom: 1.25rem;">شكرًا لطلبك من متجر رونق اليمن. تم تسجيل طلبك وإدراجه بنظام الشحن المباشر.</p>
             
             <div style="background: var(--bg-secondary); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
                 <span style="font-size: 0.85rem; color: var(--text-muted);">رقم الطلب الخاص بك:</span>
                 <div style="font-size: 1.3rem; font-weight: 800; color: var(--brand-primary); font-family: var(--font-heading);" id="confirmedOrderId">RNQ-YE-89241</div>
             </div>
 
-            <button class="btn-primary" style="width: 100%;" onclick="closeSuccessModal()">
-                متابعة التسوق في رونق اليمن
+            <div style="display: flex; gap: 0.75rem; flex-direction: column;">
+                <button class="btn-primary" id="successInvoiceBtn">
+                    <i class="fa-solid fa-print"></i> عرض وطباعة فاتورة وسند الاستلام
+                </button>
+                <button class="btn-outline" style="border-color: var(--border-color); color: var(--text-primary);" onclick="closeSuccessModal()">
+                    متابعة التسوق في رونق اليمن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         نافذة طباعة الفاتورة وسند الاستلام (Invoice Modal)
+         ========================================== -->
+    <div class="modal-overlay" id="invoiceModalOverlay" onclick="if(event.target === this) closeInvoiceModal()">
+        <div class="invoice-modal">
+            <button class="modal-close-btn no-print" onclick="closeInvoiceModal()">
+                <i class="fa-solid fa-xmark"></i>
             </button>
+            <div id="invoiceContent">
+                <!-- يتم حقن الفاتورة إلكترونياً -->
+            </div>
         </div>
     </div>
 
