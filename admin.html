@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تحكم الإدارة | متجر رونق اليمن</title>
+    <title>لوحة تحكم الإدارة المتقدمة | متجر رونق اليمن</title>
     
     <!-- حماية فورية: التحقق من تسجيل الدخول قبل تحميل الصفحة -->
     <script>
@@ -168,6 +168,37 @@
                         </div>
                     </div>
 
+                    <!-- المخططات البيانية التفاعلية -->
+                    <div class="analytics-grid">
+                        
+                        <!-- مخطط المبيعات الأسبوعي -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 style="font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-chart-simple" style="color: var(--brand-primary);"></i> مؤشر المبيعات خلال أيام الأسبوع
+                                </h3>
+                                <span style="font-size: 0.78rem; color: var(--brand-success); font-weight: 700; background: rgba(16,185,129,0.1); padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">+28% نمو نشط</span>
+                            </div>
+                            <div class="chart-bars-container" id="analyticsWeeklyBars">
+                                <!-- يتم حقن الأعمدة التفاعلية -->
+                            </div>
+                        </div>
+
+                        <!-- توزيع الطلبات حسب المحافظات -->
+                        <div class="chart-card">
+                            <div class="chart-header">
+                                <h3 style="font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fa-solid fa-map-location-dot" style="color: var(--brand-secondary);"></i> توزيع الطلبات حسب المحافظة
+                                </h3>
+                                <span style="font-size: 0.78rem; color: var(--text-muted);">كافة المحافظات</span>
+                            </div>
+                            <div class="chart-city-list" id="analyticsCityList">
+                                <!-- يتم حقن أشرطة التقدم حسب المحافظات -->
+                            </div>
+                        </div>
+
+                    </div>
+
                     <!-- نظرة سريعة على أحدث المنتجات -->
                     <div class="table-card">
                         <div class="table-toolbar">
@@ -222,9 +253,14 @@
                                 </select>
                             </div>
 
-                            <button class="btn-primary" onclick="openAddProductModal()">
-                                <i class="fa-solid fa-plus"></i> إضافة منتج جديد
-                            </button>
+                            <div style="display: flex; gap: 0.75rem;">
+                                <button class="btn-outline" style="border-color: var(--border-color); font-size: 0.85rem; padding: 0.5rem 1rem;" onclick="exportProductsCSV()" title="تصدير إلى Excel / CSV">
+                                    <i class="fa-solid fa-file-excel" style="color: var(--brand-success);"></i> تصدير المنتجات (CSV)
+                                </button>
+                                <button class="btn-primary" onclick="openAddProductModal()">
+                                    <i class="fa-solid fa-plus"></i> إضافة منتج جديد
+                                </button>
+                            </div>
 
                         </div>
 
@@ -258,6 +294,10 @@
                     <div class="table-card">
                         <div class="table-toolbar">
                             <h3><i class="fa-solid fa-receipt" style="color: var(--brand-primary);"></i> سجل طلبات المحافظات اليمنية</h3>
+                            
+                            <button class="btn-outline" style="border-color: var(--border-color); font-size: 0.85rem; padding: 0.5rem 1rem;" onclick="exportOrdersCSV()" title="تصدير سجل الطلبات">
+                                <i class="fa-solid fa-file-excel" style="color: var(--brand-success);"></i> تصدير الطلبات إلى Excel (CSV)
+                            </button>
                         </div>
 
                         <div class="table-responsive">
@@ -270,7 +310,7 @@
                                         <th>عدد المنتجات</th>
                                         <th>الإجمالي (ر.ي)</th>
                                         <th>حالة الطلب</th>
-                                        <th>التفاصيل</th>
+                                        <th>الإجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody id="adminOrdersTableBody">
@@ -362,7 +402,7 @@
 
                                 <div class="form-group">
                                     <label class="form-label" for="newAdminPassword">كلمة المرور الجديدة *</label>
-                                    <input type="password" id="newAdminPassword" class="form-input" placeholder="أدخل كلمة المرور الجديدة (6 أحرف على الأقل)" minlength="4" required>
+                                    <input type="password" id="newAdminPassword" class="form-input" placeholder="أدخل كلمة المرور الجديدة (4 أحرف على الأقل)" minlength="4" required>
                                 </div>
 
                                 <div class="form-group">
@@ -549,7 +589,7 @@
          نافذة تفاصيل الطلب (Order Details Modal)
          ========================================== -->
     <div class="modal-overlay" id="orderDetailsModalOverlay" onclick="if(event.target === this) closeOrderDetailsModal()">
-        <div class="admin-modal" style="max-width: 600px;">
+        <div class="admin-modal" style="max-width: 650px;">
             <button class="modal-close-btn" onclick="closeOrderDetailsModal()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
