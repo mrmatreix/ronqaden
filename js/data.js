@@ -325,6 +325,16 @@ const DEFAULT_ORDERS = [
     }
 ];
 
+const DEFAULT_STORE_SETTINGS = {
+    whatsappNumber: '967777123456',
+    supportPhone: '+967 777 123 456',
+    landlinePhone: '+967 1 445566',
+    unsBeneficiaryName: 'متجر رونق اليمن المعتمد',
+    unsPhone: '777123456',
+    unsAccount: '55443322',
+    freeShippingThreshold: 100000
+};
+
 // ==========================================
 // دوال إدارة ومزامنة التخزين المحلي (Storage Handlers)
 // ==========================================
@@ -333,8 +343,27 @@ const STORAGE_KEYS = {
     PRODUCTS: 'rawnaq_yemen_products',
     CATEGORIES: 'rawnaq_yemen_categories',
     COUPONS: 'rawnaq_yemen_coupons',
-    ORDERS: 'rawnaq_yemen_orders'
+    ORDERS: 'rawnaq_yemen_orders',
+    SETTINGS: 'rawnaq_yemen_settings'
 };
+
+// إعدادات المتجر والتواصل
+function getStoreSettings() {
+    const data = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+    if (!data) {
+        saveStoreSettings(DEFAULT_STORE_SETTINGS);
+        return DEFAULT_STORE_SETTINGS;
+    }
+    try {
+        return { ...DEFAULT_STORE_SETTINGS, ...JSON.parse(data) };
+    } catch (e) {
+        return DEFAULT_STORE_SETTINGS;
+    }
+}
+
+function saveStoreSettings(settings) {
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+}
 
 // المنتجات
 function getStoreProducts() {
