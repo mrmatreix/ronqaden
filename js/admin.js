@@ -1,19 +1,95 @@
 /**
  * لوحة تحكم إدارة متجر رونق الفاخر - اليمن (Rawnaq Yemen Admin Dashboard Logic)
- * إدارة كاملة للمنتجات، الأسعار بالريال اليمني (ر.ي)، المواصفات، الطلبات، والكوبونات
+ * إدارة كاملة للمنتجات، الأسعار بالريال اليمني (ر.ي)، المواصفات، الطلبات، الكوبونات، وتسجيل الدخول والأمان
  */
+
+const AUTH_CONFIG = {
+    USER_KEY: 'rawnaq_admin_username',
+    PASS_KEY: 'rawnaq_admin_password',
+    SESSION_KEY: 'rawnaq_admin_authenticated'
+};
 
 let currentEditingProductId = null;
 let productToDeleteId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    checkAdminAuth();
     initAdminTheme();
     loadDashboardStats();
     renderAdminProducts();
     renderAdminOrders();
     renderAdminCoupons();
     initAdminEventListeners();
+    updateAdminNameDisplay();
 });
+
+// ==========================================
+// التحقق من الجلسة والأمان (Auth & Security)
+// ==========================================
+function checkAdminAuth() {
+    const isAuth = sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true' || 
+                   localStorage.getItem(AUTH_CONFIG.SESSION_KEY) === 'true';
+    if (!isAuth) {
+        window.location.href = 'login.html';
+    }
+}
+
+function handleAdminLogout() {
+    if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج من لوحة التحكم؟')) {
+        sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        showAdminToast('تم تسجيل الخروج بنجاح! جاري تحويلك...', 'info');
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 600);
+    }
+}
+
+function updateAdminNameDisplay() {
+    const username = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
+    const topbarName = document.getElementById('topbarAdminName');
+    const inputUsername = document.getElementById('currentAdminUsername');
+    if (topbarName) topbarName.innerText = `المدير (${username})`;
+    if (inputUsername) inputUsername.value = username;
+}
+
+function handleChangeCredentials(e) {
+    e.preventDefault();
+
+    const currentUsername = localStorage.getItem(AUTH_CONFIG.USER_KEY) || 'admin';
+    const currentPassword = localStorage.getItem(AUTH_CONFIG.PASS_KEY) || 'admin123';
+
+    const enteredUsername = document.getElementById('currentAdminUsername').value.trim();
+    const enteredCurrentPass = document.getElementById('currentAdminPassword').value;
+    const newPass = document.getElementById('newAdminPassword').value;
+    const confirmNewPass = document.getElementById('confirmNewAdminPassword').value;
+
+    if (enteredCurrentPass !== currentPassword) {
+        showAdminToast('كلمة المرور الحالية غير صحيحة!', 'error');
+        return;
+    }
+
+    if (newPass !== confirmNewPass) {
+        showAdminToast('كلمة المرور الجديدة غير متطابقة مع التأكيد!', 'error');
+        return;
+    }
+
+    if (newPass.length < 4) {
+        showAdminToast('يجب أن تتكون كلمة المرور من 4 خانات على الأقل', 'error');
+        return;
+    }
+
+    // حفظ البيانات الجديدة
+    localStorage.setItem(AUTH_CONFIG.USER_KEY, enteredUsername);
+    localStorage.setItem(AUTH_CONFIG.PASS_KEY, newPass);
+
+    updateAdminNameDisplay();
+    document.getElementById('currentAdminPassword').value = '';
+    document.getElementById('newAdminPassword').value = '';
+    document.getElementById('confirmNewAdminPassword').value = '';
+
+    showAdminToast('تم تحديث بيانات الدخول بنجاح! يمكنك استخدامها الآن', 'success');
+}
 
 // ==========================================
 // إدارة المظهر (Theme)
@@ -68,6 +144,10 @@ function switchTab(tabId, clickedElement) {
         if (titleEl) titleEl.innerText = 'إدارة الكوبونات والخصومات';
         if (descEl) descEl.innerText = 'إنشاء وإدارة رموز العروض الترويجية لمتجر رونق اليمن';
         renderAdminCoupons();
+    } else if (tabId === 'tab-settings') {
+        if (titleEl) titleEl.innerText = 'إعدادات الأمان وبيانات الدخول';
+        if (descEl) descEl.innerText = 'تحديث اسم المستخدم وكلمة المرور الخاصة بالإدارة';
+        updateAdminNameDisplay();
     } else {
         if (titleEl) titleEl.innerText = 'لوحة تحكم رونق اليمن';
         if (descEl) descEl.innerText = 'نظرة عامة على أداء المتجر والمؤشرات بالريال اليمني';
@@ -461,7 +541,7 @@ function openOrderDetailsModal(orderId) {
                 <strong>عنوان التوصيل (اليمن):</strong>
                 <p style="font-size: 0.9rem; margin-top: 0.3rem;">المحافظة / المدينة: ${order.customerCity}</p>
                 <p style="font-size: 0.9rem;">العنوان: ${order.customerAddress || 'غير محدد'}</p>
-                <p style="font-size: 0.9rem;">طريقة الدفع: ${order.paymentMethod || 'كاش عند الاستلام'}</p>
+                <p style="font-size: 0.9rem; color: var(--brand-primary); font-weight: 700;">طريقة الدفع: ${order.paymentMethod || 'كاش عند الاستلام'}</p>
             </div>
         </div>
 
