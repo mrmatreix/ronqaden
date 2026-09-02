@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لوحة تحكم الإدارة | متجر رونق اليمن</title>
     
+    <!-- حماية فورية: التحقق من تسجيل الدخول قبل تحميل الصفحة -->
+    <script>
+        const AUTH_SESSION_KEY = 'rawnaq_admin_authenticated';
+        if (sessionStorage.getItem(AUTH_SESSION_KEY) !== 'true' && localStorage.getItem(AUTH_SESSION_KEY) !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
+    
     <!-- الأيقونات والخطوط -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -56,15 +64,24 @@
                         <span>الكوبونات والخصومات</span>
                     </div>
                 </li>
+                <li>
+                    <div class="sidebar-link" onclick="switchTab('tab-settings', this)">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>الأمان وكلمة المرور</span>
+                    </div>
+                </li>
             </ul>
 
             <div class="sidebar-footer">
                 <button class="back-to-store-btn" onclick="handleResetDefaults()" style="margin-bottom: 0.5rem; background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.2); color: #f43f5e;" title="استعادة المنتجات الافتراضية الأصلية">
                     <i class="fa-solid fa-rotate-left"></i> استعادة الافتراضي
                 </button>
-                <a href="index.html" class="back-to-store-btn">
+                <a href="index.html" class="back-to-store-btn" style="margin-bottom: 0.5rem;">
                     <i class="fa-solid fa-store"></i> الانتقال للمتجر
                 </a>
+                <button class="back-to-store-btn" onclick="handleAdminLogout()" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border-color: rgba(239, 68, 68, 0.25);" title="تسجيل الخروج">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                </button>
             </div>
         </aside>
 
@@ -89,10 +106,14 @@
                         <i class="fa-solid fa-moon"></i>
                     </button>
 
-                    <div class="admin-user-badge">
+                    <div class="admin-user-badge" onclick="switchTab('tab-settings', document.querySelectorAll('.sidebar-link')[4])" style="cursor: pointer;" title="إعدادات الحساب">
                         <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="المدير" class="admin-avatar">
-                        <span class="admin-name">مدير متجر رونق اليمن</span>
+                        <span class="admin-name" id="topbarAdminName">مدير متجر رونق</span>
                     </div>
+
+                    <button class="action-btn" onclick="handleAdminLogout()" title="تسجيل الخروج" style="color: #ef4444;">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
             </header>
 
@@ -307,6 +328,53 @@
                             </div>
                         </div>
 
+                    </div>
+
+                </div>
+
+                <!-- ==========================================
+                     القسم 5: إعدادات الأمان وتغيير كلمة المرور (Settings Tab)
+                     ========================================== -->
+                <div id="tab-settings" class="tab-content">
+                    
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <div class="table-card" style="padding: 2rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                                <div style="width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--brand-primary-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                                    <i class="fa-solid fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <h3 style="font-size: 1.25rem;">إعدادات الأمان وبيانات الدخول</h3>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">يمكنك تحديث اسم المستخدم وكلمة المرور الخاصة بلوحة التحكم من هنا</p>
+                                </div>
+                            </div>
+
+                            <form id="changeCredentialsForm" onsubmit="handleChangeCredentials(event)">
+                                <div class="form-group">
+                                    <label class="form-label" for="currentAdminUsername">اسم المستخدم الحالي / الجديد</label>
+                                    <input type="text" id="currentAdminUsername" class="form-input" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="currentAdminPassword">كلمة المرور الحالية للتأكيد *</label>
+                                    <input type="password" id="currentAdminPassword" class="form-input" placeholder="أدخل كلمة المرور الحالية" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="newAdminPassword">كلمة المرور الجديدة *</label>
+                                    <input type="password" id="newAdminPassword" class="form-input" placeholder="أدخل كلمة المرور الجديدة (6 أحرف على الأقل)" minlength="4" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="confirmNewAdminPassword">تأكيد كلمة المرور الجديدة *</label>
+                                    <input type="password" id="confirmNewAdminPassword" class="form-input" placeholder="أعد إدخال كلمة المرور الجديدة" minlength="4" required>
+                                </div>
+
+                                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
+                                    <i class="fa-solid fa-shield-check"></i> حفظ بيانات الدخول الجديدة
+                                </button>
+                            </form>
+                        </div>
                     </div>
 
                 </div>
